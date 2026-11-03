@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-export const SECTIONS = ['home', 'journey', 'learning', 'courses', 'opportunities', 'mentorship'] as const;
+export const SECTIONS = ['home', 'dashboard', 'journey', 'learning', 'courses', 'opportunities', 'mentorship'] as const;
 export type Section = (typeof SECTIONS)[number];
 
 function readSection(): Section {
