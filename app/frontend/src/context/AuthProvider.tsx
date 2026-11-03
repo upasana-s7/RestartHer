@@ -16,7 +16,9 @@ function bytesToBase64(bytes: Uint8Array): string {
 function base64ToBytes(value: string): Uint8Array { return Uint8Array.from(atob(value), (c) => c.charCodeAt(0)); }
 async function hashPassword(password: string, salt: Uint8Array): Promise<string> {
  const material = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
- const saltBuffer = new ArrayBuffer(salt.byteLength);\n new Uint8Array(saltBuffer).set(salt);\n const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: saltBuffer, iterations: 120000, hash: 'SHA-256' }, material, 256);
+ const saltBuffer = new ArrayBuffer(salt.byteLength);
+ new Uint8Array(saltBuffer).set(salt);
+ const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: saltBuffer, iterations: 120000, hash: 'SHA-256' }, material, 256);
  return bytesToBase64(new Uint8Array(bits));
 }
 function toDemoUser(user: StoredUser): DemoUser { return user.email ? { id: user.id, email: user.email } : { id: user.id, phone: user.phone }; }
