@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const INTRO_DURATION_MS = 3000;
+const INTRO_DURATION_MS = 5000;
 const SPLASH_ARTWORK = 'https://raw.githubusercontent.com/upasana-s7/BoltFrontend/main/RestartHER__Your_Next_Chapter_Awaits_(1)%20copy.png';
 
 interface IntroScreenProps {
