@@ -90,8 +90,11 @@ export function saveCareerRoadmap(userId: string, roadmap: CareerRoadmap): void 
   localStorage.setItem('restarther_roadmap_v1_' + userId, JSON.stringify(roadmap));
 }
 function getTargetWeeks(availability: string): number {
-  const days = Number(availability.match(/(\d+)\s*days?/i)?.[1] ?? 30);
-  return Math.max(1, Math.min(13, Math.ceil(days / 7)));
+  const weeks = availability.match(/(\\d+)\\s*weeks?/i);
+  const months = availability.match(/(\\d+)\\s*months?/i);
+  const days = availability.match(/(\\d+)\\s*days?/i);
+  const totalWeeks = weeks ? Number(weeks[1]) : months ? Number(months[1]) * 4 : days ? Math.ceil(Number(days[1]) / 7) : 4;
+  return Math.max(1, Math.min(26, totalWeeks));
 }
 export async function generateCareerRoadmap(answers: CareerAssessment, revision = ''): Promise<CareerRoadmap> {
   const catalogue = COURSES.map((course) => ({ id: course.id, title: course.title, provider: course.provider, skills: course.skills, level: course.level }));
