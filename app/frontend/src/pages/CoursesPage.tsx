@@ -10,7 +10,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import { FIELD_CLASS, LABEL_CLASS } from '@/components/ui/controls';
 import { buttonClass } from '@/components/ui/buttonClass';
 import { useAuth } from '@/hooks/useAuth';
-import { loadCareerRoadmap } from '@/lib/journey';
+import { getRecommendedSapCourseIds, loadCareerRoadmap } from '@/lib/journey';
 
 type Tab = 'recommended' | 'explore';
 
@@ -24,7 +24,7 @@ export default function CoursesPage() {
   useEffect(() => {
     if (!user?.id) return;
     const roadmap = loadCareerRoadmap(user.id);
-    setRoadmapCourseIds(roadmap?.confirmedAt ? Array.from(new Set(roadmap.weeklyPlan.flatMap((week) => week.courseIds))) : []);
+    setRoadmapCourseIds(roadmap?.confirmedAt ? Array.from(new Set([...roadmap.weeklyPlan.flatMap((week) => week.courseIds), ...getRecommendedSapCourseIds(roadmap.assessment)])) : []);
   }, [user?.id]);
   const journeyCourses = COURSES.filter((course) => roadmapCourseIds.includes(course.id));
 
@@ -77,7 +77,7 @@ export default function CoursesPage() {
               <>
                 <div className="mb-6 rounded-xl border border-burgundy/15 bg-white p-6">
                   <p className="editorial-label flex items-center gap-2"><Sparkles className="h-4 w-4" /> Matched to your confirmed roadmap</p>
-                  <p className="mt-2 text-sm text-ink/70">These courses were selected from the learning milestones in your personal plan.</p>
+                  <p className="mt-2 text-sm text-ink/70">These SAP Learning resources are matched to your career direction, existing skills and learning priorities.</p>
                 </div>
                 <div className="grid gap-6 md:grid-cols-2">
                   {journeyCourses.map((course) => <CourseCard key={course.id} course={course} saved={saved.has(course.id)} onToggleSave={toggleSave} onOpen={setOpenCourse} />)}
@@ -210,7 +210,7 @@ export default function CoursesPage() {
             )}
 
             <p className="mt-10 font-label text-xs uppercase tracking-wider text-muted">
-              Sample catalogue for this prototype. Confirm current price and certificate terms on each provider’s site.
+              SAP Learning catalogue links. Check each SAP page for current access, completion recognition and certification terms.
             </p>
           </div>
         )}
