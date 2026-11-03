@@ -28,7 +28,7 @@ export default function CoursesPage() {
   }, [user?.id]);
   const journeyCourses = COURSES.filter((course) => roadmapCourseIds.includes(course.id));
 
-  const results = useMemo(() => filterCourses(COURSES, filters), [filters]);
+  const results = useMemo(() => filterCourses(COURSES, filters).sort((a, b) => Number(b.provider.startsWith('SAP')) - Number(a.provider.startsWith('SAP'))), [filters]);
 
   const update = <K extends keyof CourseFilters>(key: K, value: CourseFilters[K]) =>
     setFilters((current) => ({ ...current, [key]: value }));
@@ -77,7 +77,7 @@ export default function CoursesPage() {
               <>
                 <div className="mb-6 rounded-xl border border-burgundy/15 bg-white p-6">
                   <p className="editorial-label flex items-center gap-2"><Sparkles className="h-4 w-4" /> Matched to your confirmed roadmap</p>
-                  <p className="mt-2 text-sm text-ink/70">These SAP Learning resources are matched to your career direction, existing skills and learning priorities.</p>
+                  <p className="mt-2 text-sm text-ink/70">These courses are matched to your previous experience, target return role and learning priorities. Each course opens its provider's official learning page.</p>
                 </div>
                 <div className="grid gap-6 md:grid-cols-2">
                   {journeyCourses.map((course) => <CourseCard key={course.id} course={course} saved={saved.has(course.id)} onToggleSave={toggleSave} onOpen={setOpenCourse} />)}
@@ -210,7 +210,7 @@ export default function CoursesPage() {
             )}
 
             <p className="mt-10 font-label text-xs uppercase tracking-wider text-muted">
-              SAP Learning catalogue links. Check each SAP page for current access, completion recognition and certification terms.
+              SAP resources are prioritised above the wider provider catalogue. Check each provider's page for current access, course completion and certification terms.
             </p>
           </div>
         )}
