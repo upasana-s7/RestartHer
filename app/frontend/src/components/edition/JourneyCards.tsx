@@ -21,7 +21,7 @@ const JOURNEY_CARDS: JourneyCard[] = [
     target: 'journey',
     image: 'https://images.pexels.com/photos/19905190/pexels-photo-19905190.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
     icon: BookOpenText,
-    comingSoon: true,
+    comingSoon: false,
   },
   {
     title: 'Learn something new',
