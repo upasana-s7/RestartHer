@@ -14,9 +14,11 @@ export default async function handler(req, res) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return res.status(503).json({ error: 'The AI companion has not been configured yet.' });
 
+  const isRoadmapRequest = req.body?.mode === 'roadmap';
+  const maxMessageLength = isRoadmapRequest ? ROADMAP_MAX_MESSAGE_LENGTH : CHAT_MAX_MESSAGE_LENGTH;
   const message = typeof req.body?.message === 'string' ? req.body.message.trim() : '';
   if (!message) return res.status(400).json({ error: 'Please enter a message.' });
-  if (message.length > MAX_MESSAGE_LENGTH) return res.status(400).json({ error: 'Please keep messages under 4,000 characters.' });
+  if (message.length > maxMessageLength) return res.status(400).json({ error: isRoadmapRequest ? 'Your roadmap request is too long. Please shorten the extra details and try again.' : 'Please keep messages under 4,000 characters.' });
 
   let history = req.body?.history ?? [];
   if (typeof history === 'string') {
@@ -26,11 +28,10 @@ export default async function handler(req, res) {
   const contents = history.slice(-8).flatMap((item) => {
     if (!item || typeof item.text !== 'string') return [];
     const role = item.role === 'model' || item.role === 'assistant' ? 'model' : 'user';
-    return [{ role, parts: [{ text: item.text.slice(0, MAX_MESSAGE_LENGTH) }] }];
+    return [{ role, parts: [{ text: item.text.slice(0, CHAT_MAX_MESSAGE_LENGTH) }] }];
   });
   contents.push({ role: 'user', parts: [{ text: message }] });
 
-  const isRoadmapRequest = req.body?.mode === 'roadmap';
   const model = isRoadmapRequest ? ROADMAP_MODEL : CHAT_MODEL;
   const requestBody = {
     systemInstruction: {
