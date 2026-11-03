@@ -51,39 +51,8 @@
     transform-origin: left;
   }
   .intro-splash-art {
-    animation: splash-art 5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation: splash-art 5s ease-out both;
     transform-origin: center;
-  }
-  .intro-splash-vignette {
-    background: radial-gradient(circle at center, transparent 44%, rgb(45 3 17 / 0.28) 100%);
-    pointer-events: none;
-  }
-  .intro-splash-glow {
-    background: linear-gradient(110deg, transparent 0%, rgb(255 222 164 / 0.1) 48%, transparent 56%);
-    filter: blur(18px);
-    opacity: 0;
-    transform: rotate(18deg) translateX(-80%);
-    animation: splash-glow 5s 0.45s ease-in-out both;
-    pointer-events: none;
-  }
-  .intro-splash-glow-right {
-    animation-delay: 0.9s;
-    transform: rotate(-22deg) translateX(80%);
-  }
-  .intro-splash-fabric {
-    background: linear-gradient(168deg, transparent 12%, rgb(255 111 108 / 0.12) 43%, transparent 58%), linear-gradient(12deg, transparent 38%, rgb(116 5 29 / 0.3) 52%, transparent 67%);
-    background-size: 160% 140%, 140% 160%;
-    mix-blend-mode: screen;
-    opacity: 0;
-    animation: splash-fabric 5s 0.25s ease-in-out both;
-    pointer-events: none;
-  }
-  .intro-splash-trail {
-    background: linear-gradient(145deg, transparent 35%, rgb(255 219 155 / 0.2) 49%, transparent 52%);
-    background-size: 220% 220%;
-    opacity: 0;
-    animation: splash-trail 5s 0.35s ease-in-out both;
-    pointer-events: none;
   }
   .ticker-track {
     animation: ticker 38s linear infinite;
@@ -169,33 +138,9 @@
 }
 
 @keyframes splash-art {
-  0% {
-    opacity: 0;
-    transform: scale(1.045) translateY(5px);
-    filter: saturate(0.9) brightness(0.78);
-  }
-  18% {
-    opacity: 1;
-    transform: scale(1.008) translateY(0);
-    filter: saturate(1) brightness(1);
-  }
-  38% {
-    opacity: 1;
-    transform: scale(1.002) translateY(-2px);
-  }
-  62% {
-    opacity: 1;
-    transform: scale(1.006) translateY(2px);
-  }
-  82% {
-    opacity: 1;
-    transform: scale(1.002) translateY(-1px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-    filter: saturate(1) brightness(1);
-  }
+  0% { opacity: 0; transform: scale(1.015); }
+  12% { opacity: 1; transform: scale(1.008); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 @keyframes splash-glow {
