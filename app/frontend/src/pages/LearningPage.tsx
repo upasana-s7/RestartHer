@@ -5,7 +5,7 @@ import { buttonClass } from '@/components/ui/buttonClass';
 import { useAuth } from '@/hooks/useAuth';
 import { useSectionRoute } from '@/hooks/useSectionRoute';
 import type { CareerRoadmap } from '@/lib/journey';
-import { loadCareerRoadmap } from '@/lib/journey';
+import { getRecommendedSapCourseIds, loadCareerRoadmap } from '@/lib/journey';
 import { COURSES } from '@/data/courses';
 
 export default function LearningPage() {
@@ -17,7 +17,7 @@ export default function LearningPage() {
   }, [user?.id]);
 
   const confirmed = Boolean(roadmap?.confirmedAt);
-  const recommendedIds = new Set(roadmap?.weeklyPlan.flatMap((week) => week.courseIds) ?? []);
+  const recommendedIds = new Set([...(roadmap?.weeklyPlan.flatMap((week) => week.courseIds) ?? []), ...getRecommendedSapCourseIds(roadmap?.assessment)]);
   const recommendedCourses = COURSES.filter((course) => recommendedIds.has(course.id));
   const milestones = [
     { title: 'Complete your career assessment', detail: 'Answer seven questions so your next steps reflect your goals.', done: Boolean(roadmap) },
@@ -48,7 +48,7 @@ export default function LearningPage() {
               ))}
             </div>
             <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
-              <div><p className="font-display text-xl font-bold text-ink">Recommended courses</p><p className="mt-1 text-sm text-ink/70">Matched to the skills in your roadmap.</p></div>
+              <div><p className="font-display text-xl font-bold text-ink">Recommended courses</p><p className="mt-1 text-sm text-ink/70">SAP Learning resources matched to your career direction and skill priorities.</p></div>
               <button type="button" onClick={() => setSection('courses')} className={buttonClass('outline', 'gap-2')}>Explore all courses <ArrowRight className="h-4 w-4" /></button>
             </div>
             {recommendedCourses.length ? (
