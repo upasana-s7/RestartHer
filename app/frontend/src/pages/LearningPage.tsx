@@ -76,20 +76,39 @@ export default function LearningPage() {
                 <div className="mt-3 h-2 overflow-hidden rounded-full bg-burgundy/10"><div className="h-full rounded-full bg-burgundy transition-all" style={{ width: progress + '%' }} /></div>
                 <p className="mt-2 text-xs text-muted">{completedCount} of {allTaskIds.length} learning tasks completed · Progress is saved on this device.</p>
               </div>
-              <div className="mt-8 space-y-4">
-                {roadmap.weeklyPlan.map((week) => (
-                  <article key={week.week} className="rounded-xl border border-burgundy/15 bg-cream-light p-5">
-                    <p className="editorial-label">Week {week.week}</p>
-                    <h3 className="mt-2 font-display text-xl font-bold text-ink">{week.focus}</h3>
-                    <p className="mt-2 text-sm text-muted">{week.topics.join(' · ')}</p>
-                    <ul className="mt-4 space-y-3">{week.tasks.map((task, index) => {
-                      const taskId = `week-${week.week}-task-${index}`;
-                      return <li key={taskId} className="flex items-start gap-3 text-sm text-ink/85"><input type="checkbox" checked={completedTasks.has(taskId)} onChange={() => toggleTask(taskId)} className="mt-0.5 h-4 w-4 accent-burgundy" /><span className={completedTasks.has(taskId) ? 'text-muted line-through' : ''}>{task}</span></li>;
-                    })}</ul>
-                    <p className="mt-4 border-t border-burgundy/10 pt-3 text-sm"><strong>Milestone:</strong> {week.milestone}</p>
-                  </article>
-                ))}
-              </div>
+              <div className="mt-8 space-y-8">
+                {[
+                  { title: 'Phase 1 · Foundations & refresh', subtitle: 'Reconnect with the basics and identify what you already know.', from: 0, to: Math.max(1, Math.ceil(roadmap.weeklyPlan.length / 4)) },
+                  { title: 'Phase 2 · Guided practice', subtitle: 'Build confidence through focused exercises and supported practice.', from: Math.max(1, Math.ceil(roadmap.weeklyPlan.length / 4)), to: Math.max(2, Math.ceil(roadmap.weeklyPlan.length / 2)) },
+                  { title: 'Phase 3 · Applied skills', subtitle: 'Use your growing skills in practical tasks and small projects.', from: Math.max(2, Math.ceil(roadmap.weeklyPlan.length / 2)), to: Math.max(3, Math.ceil(roadmap.weeklyPlan.length * 3 / 4)) },
+                  { title: 'Phase 4 · Career readiness', subtitle: 'Bring the learning together into evidence of your abilities.', from: Math.max(3, Math.ceil(roadmap.weeklyPlan.length * 3 / 4)), to: roadmap.weeklyPlan.length },
+                ].map((phase, phaseIndex) => {
+                  const phaseWeeks = roadmap.weeklyPlan.slice(phase.from, phase.to);
+                  if (!phaseWeeks.length) return null;
+                  return <section key={phase.title} aria-label={phase.title}>
+                    <div className="mb-4 flex items-start gap-4">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-burgundy text-sm font-semibold text-cream">{phaseIndex + 1}</span>
+                      <div><h3 className="font-display text-xl font-bold text-ink">{phase.title}</h3><p className="mt-1 text-sm leading-6 text-ink/65">{phase.subtitle}</p></div>
+                    </div>
+                    <div className="ml-4 border-l-2 border-burgundy/15 pl-5 sm:ml-5 sm:pl-7">
+                      {phaseWeeks.map((week) => (
+                        <article key={week.week} className="border-b border-burgundy/10 py-5 first:pt-2 last:border-b-0">
+                          <div className="flex flex-wrap items-center justify-between gap-2"><p className="editorial-label">Week {week.week} · Learning focus</p><span className="text-xs text-muted">{week.tasks.filter((_, index) => completedTasks.has(`week-${week.week}-task-${index}`)).length} / {week.tasks.length} tasks done</span></div>
+                          <h4 className="mt-2 font-display text-lg font-semibold text-ink">{week.focus}</h4>
+                          <p className="mt-2 text-sm leading-6 text-ink/70"><strong className="font-semibold text-ink/80">Topics:</strong> {week.topics.join(' · ')}</p>
+                          <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
+                            <ul className="space-y-3">{week.tasks.map((task, index) => {
+                              const taskId = `week-${week.week}-task-${index}`;
+                              return <li key={taskId} className="flex items-start gap-3 text-sm leading-6 text-ink/85"><input aria-label={`Complete week ${week.week} task ${index + 1}`} type="checkbox" checked={completedTasks.has(taskId)} onChange={() => toggleTask(taskId)} className="mt-1 h-4 w-4 shrink-0 accent-burgundy" /><span className={completedTasks.has(taskId) ? 'text-muted line-through' : ''}>{task}</span></li>;
+                            })}</ul>
+                            <aside className="h-fit rounded-lg bg-cream-light p-4"><p className="editorial-label">Milestone</p><p className="mt-2 text-sm leading-6 text-ink/80">{week.milestone}</p></aside>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </section>;
+                })}
+              </div>>
             </section>
 
             <section className="mt-8 rounded-[1.5rem] border border-burgundy/15 bg-white p-7 shadow-card sm:p-9">
