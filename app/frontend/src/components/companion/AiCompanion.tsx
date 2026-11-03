@@ -29,20 +29,20 @@ export default function AiCompanion({ open, onClose }: AiCompanionProps) {
   };
   return (
     <section id="ai-companion" aria-label="RestartHER AI companion" aria-hidden={!open}
-      className={'fixed bottom-24 left-4 right-4 z-40 flex max-h-[min(580px,70vh)] flex-col overflow-hidden rounded-2xl border border-burgundy/20 bg-cream-light shadow-panel transition-all duration-300 ease-out lg:left-80 lg:right-auto lg:w-[380px] ' + (open ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-4 opacity-0')}>
-      <header className="flex items-center justify-between gap-3 border-b border-burgundy/15 bg-burgundy px-5 py-4 text-cream">
-        <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-cream/15"><Sparkles className="h-4 w-4" aria-hidden="true" /></span><div><p className="font-label text-sm font-semibold">RestartHER AI</p><p className="text-[0.7rem] text-cream/80">Powered by Gemini</p></div></div>
+      className={'fixed left-6 top-36 z-50 flex max-h-[250px] w-60 flex-col overflow-hidden rounded-xl border border-burgundy/20 bg-cream-light shadow-panel transition-all duration-300 ease-out ' + (open ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-2 opacity-0')}>
+      <header className="flex items-center justify-between gap-3 border-b border-burgundy/15 bg-burgundy px-3 py-2 text-cream">
+        <div className="flex items-center gap-3"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-cream/15"><Sparkles className="h-4 w-4" aria-hidden="true" /></span><div><p className="font-label text-xs font-semibold">RestartHER AI</p><p className="text-[0.6rem] text-cream/80">Powered by Gemini</p></div></div>
         <button type="button" onClick={onClose} aria-label="Minimise AI companion" className="rounded-full p-2 transition-colors hover:bg-cream/15"><Minus className="h-4 w-4" /></button>
       </header>
-      <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto px-5 py-5" aria-live="polite">
-        {messages.map((message) => <div key={message.id} className={'flex ' + (message.role === 'user' ? 'justify-end' : 'justify-start')}><p className={'animate-rise max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-[1.5] ' + (message.role === 'user' ? 'rounded-br-sm bg-burgundy text-cream' : 'rounded-bl-sm border border-burgundy/15 bg-cream text-ink')}>{message.text}</p></div>)}
+      <div ref={listRef} className="flex-1 space-y-2 overflow-y-auto px-3 py-3" aria-live="polite">
+        {messages.map((message) => <div key={message.id} className={'flex ' + (message.role === 'user' ? 'justify-end' : 'justify-start')}><p className={'animate-rise max-w-[85%] rounded-xl px-3 py-2 text-xs leading-[1.45] ' + (message.role === 'user' ? 'rounded-br-sm bg-burgundy text-cream' : 'rounded-bl-sm border border-burgundy/15 bg-cream text-ink')}>{message.text}</p></div>)}
         {thinking && <div className="flex justify-start" aria-label="RestartHER AI is typing"><span className="rounded-2xl rounded-bl-sm border border-burgundy/15 bg-cream px-4 py-3 text-sm text-muted">Thinking…</span></div>}
         {error && <p role="alert" className="text-sm text-burgundy">{error}</p>}
       </div>
-      <form onSubmit={send} className="flex items-center gap-2 border-t border-burgundy/15 bg-cream p-3">
+      <form onSubmit={send} className="flex items-center gap-1.5 border-t border-burgundy/15 bg-cream p-2">
         <label htmlFor="ai-draft" className="sr-only">Message RestartHER AI</label>
-        <input id="ai-draft" value={draft} onChange={(event) => setDraft(event.target.value)} maxLength={4000} placeholder="Ask about your career or next step" className="min-w-0 flex-1 rounded-lg border border-burgundy/25 bg-cream-light px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:border-burgundy focus:outline-none focus:ring-2 focus:ring-burgundy/20" />
-        <button type="submit" disabled={!draft.trim() || thinking} aria-label="Send message" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-burgundy text-cream transition-all duration-200 hover:bg-burgundy-deep disabled:cursor-not-allowed disabled:opacity-40"><Send className="h-4 w-4" /></button>
+        <input id="ai-draft" value={draft} onChange={(event) => setDraft(event.target.value)} maxLength={4000} placeholder="Ask about your career or next step" className="min-w-0 flex-1 rounded-lg border border-burgundy/25 bg-cream-light px-2.5 py-2 text-xs text-ink placeholder:text-muted focus:border-burgundy focus:outline-none focus:ring-2 focus:ring-burgundy/20" />
+        <button type="submit" disabled={!draft.trim() || thinking} aria-label="Send message" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-burgundy text-cream transition-all duration-200 hover:bg-burgundy-deep disabled:cursor-not-allowed disabled:opacity-40"><Send className="h-4 w-4" /></button>
       </form>
     </section>
   );
