@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight, BookOpenCheck, CheckCircle2, Compass, GraduationCap, Sparkles, Target } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 import { buttonClass } from '@/components/ui/buttonClass';
