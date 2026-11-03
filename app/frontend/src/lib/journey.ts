@@ -25,6 +25,7 @@ export interface CareerRoadmap {
   durationWeeks: number;
   weeklyPlan: RoadmapWeek[];
   confirmedAt?: string;
+  assessment?: CareerAssessment;
 }
 export const ASSESSMENT_QUESTIONS: Array<{ key: keyof CareerAssessment; label: string; hint: string; options?: string[] }> = [
   { key: 'goal', label: 'What would you like your next career chapter to look like?', hint: 'Describe the kind of work or change you hope to make.' },
@@ -78,5 +79,5 @@ export async function generateCareerRoadmap(answers: CareerAssessment, revision 
     milestone: String(week.milestone || 'Review what you have learned'),
     courseIds: Array.isArray(week.courseIds) ? week.courseIds.filter((id): id is string => typeof id === 'string' && validIds.has(id)) : [],
   }));
-  return { title: value.title, targetRole: value.targetRole, overview: String(value.overview || ''), durationWeeks: weeklyPlan.length, weeklyPlan };
+  return { title: value.title, targetRole: value.targetRole, overview: String(value.overview || ''), durationWeeks: weeklyPlan.length, weeklyPlan, assessment: answers };
 }
