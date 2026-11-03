@@ -65,18 +65,25 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
           <section className="mt-10 rounded-[1.5rem] border border-burgundy/15 bg-white p-7 shadow-card sm:p-10">
             <div className="flex items-center gap-3 text-burgundy"><span className="flex h-11 w-11 items-center justify-center rounded-full bg-burgundy-soft"><Compass className="h-5 w-5" /></span><p className="editorial-label">Your guided journey</p></div>
             <h2 className="mt-6 font-display text-3xl font-bold text-ink">Let's build a plan that fits your life.</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-ink/75">Seven quick choices about your previous role, career break, existing strengths, return target and learning needs. Your AI guide will create a realistic plan you can review and edit.</p>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-ink/75">Answer seven short questions in your own words. Your AI guide will use your experience, goals and available time to create a plan you can review and edit.</p>
             <div className="mt-8 space-y-6">
               {ASSESSMENT_QUESTIONS.map((question, index) => (
                 <div key={question.key}>
                   <label htmlFor={question.key} className={LABEL_CLASS}>0{index + 1}. {question.label}</label>
                   <p className="mb-2 text-xs text-muted">{question.hint}</p>
-                  <select id={question.key} value={answers[question.key]} onChange={(event) => updateAnswer(question.key, event.target.value)} className={FIELD_CLASS}>
-                    <option value="">Choose one</option>
-                    {question.options.map((option) => <option key={option} value={option}>{option}</option>)}
-                  </select>
+                  {'multiline' in question && question.multiline ? (
+                    <textarea id={question.key} rows={2} value={answers[question.key]} onChange={(event) => updateAnswer(question.key, event.target.value)} placeholder={question.placeholder} className={FIELD_CLASS + ' resize-y'} />
+                  ) : (
+                    <input id={question.key} type="text" value={answers[question.key]} onChange={(event) => updateAnswer(question.key, event.target.value)} placeholder={question.placeholder} className={FIELD_CLASS} />
+                  )}
                 </div>
               ))}
+            </div>
+            <div className="mt-8 border-t border-burgundy/15 pt-7">
+              <label htmlFor="personal-context" className={LABEL_CLASS}>Anything else you'd like your AI guide to know? <span className="font-normal normal-case tracking-normal text-muted">(Optional)</span></label>
+              <p className="mb-2 text-xs text-muted">Share anything the questions didn't capture — concerns, goals, skills you feel out of practice with, or circumstances you'd like the plan to consider.</p>
+              <textarea id="personal-context" rows={5} maxLength={1500} value={answers.personalContext} onChange={(event) => updateAnswer('personalContext', event.target.value)} placeholder="Tell us in your own words. For example: I worked in software for several years, but I feel out of touch with the tools I used before my break. I'd like to return to data analytics, but I'm unsure where to begin." className={FIELD_CLASS + ' resize-y'} />
+              <p className="mt-1 text-right text-xs text-muted">{answers.personalContext.length}/1500</p>
             </div>
             {error && <p role="alert" className="mt-5 rounded-lg bg-burgundy-soft p-3 text-sm text-burgundy">{error}</p>}
             <button type="button" disabled={!complete || generating} onClick={() => void generate()} className={buttonClass('primary', 'mt-8 gap-2')}>
