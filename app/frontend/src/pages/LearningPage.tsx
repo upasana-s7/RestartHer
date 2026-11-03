@@ -108,7 +108,7 @@ export default function LearningPage() {
                     </div>
                   </section>;
                 })}
-              </div>>
+              </div>
             </section>
 
             <section className="mt-8 rounded-[1.5rem] border border-burgundy/15 bg-white p-7 shadow-card sm:p-9">
