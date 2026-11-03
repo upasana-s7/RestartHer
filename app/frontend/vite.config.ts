@@ -10,6 +10,11 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  server: {
+    proxy: {
+      '/odata': { target: 'http://localhost:4004', changeOrigin: true },
+    },
+  },
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
