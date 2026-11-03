@@ -1,7 +1,6 @@
 import type { Course } from '@/types/content';
 
-// SAP is intentionally prioritised for the current hackathon. Other providers
-// remain in the catalogue below it; every card links out to the provider's site.
+// SAP Hackathon catalogue: six SAP courses first, followed by four partner courses.
 export const COURSES: Course[] = [
   {
     id: 'sap-analytics-cloud-data-analyst', title: 'Becoming a Certified Data Analyst in SAP Analytics Cloud', provider: 'SAP Learning',
@@ -52,22 +51,6 @@ export const COURSES: Course[] = [
     summary: 'Understand implementation tasks, business-process configuration, integrations, data migration and testing.',
   },
   {
-    id: 'sap-developer-learning', title: 'SAP Developer Learning and Tutorials', provider: 'SAP Developer Center',
-    providerUrl: 'https://developers.sap.com/learn/', category: 'Technology',
-    skills: ['Software development', 'SAP BTP', 'Application development', 'Cloud', 'APIs'], level: 'Beginner',
-    duration: 'Self-paced tutorials and learning paths', cost: 'Free', hasCertificate: false,
-    certificateNote: 'Tutorial completion and badges vary by activity; check each tutorial.',
-    summary: 'Follow practical developer tutorials and guided paths for SAP technologies, cloud development and hands-on projects.',
-  },
-  {
-    id: 'sap-learning-journeys', title: 'Explore SAP Learning Journeys', provider: 'SAP Learning',
-    providerUrl: 'https://learning.sap.com/learning-journeys', category: 'Career Development',
-    skills: ['Role-based learning', 'Career upskilling', 'Certification preparation', 'Cloud', 'UX', 'Data', 'Development'], level: 'Beginner',
-    duration: 'Varies by learning journey', cost: 'Free', hasCertificate: false,
-    certificateNote: 'Some journeys prepare for certifications; certification requirements and fees vary.',
-    summary: 'Find a structured SAP learning path based on your target role, current skills and professional goals.',
-  },
-  {
     id: 'ibm-data-analytics', title: 'Data Analytics and AI Learning', provider: 'IBM SkillsBuild',
     providerUrl: 'https://skillsbuild.org/', category: 'Data Analytics',
     skills: ['Data analytics', 'AI', 'Data literacy', 'Professional skills'], level: 'Beginner',
@@ -98,37 +81,6 @@ export const COURSES: Course[] = [
     duration: 'Self-paced modules', cost: 'Free', hasCertificate: false,
     certificateNote: 'Learning modules are free; separate Microsoft certification exams may cost extra.',
     summary: 'Learn to connect, model and visualise data with Power BI using Microsoft\'s official training.',
-  },
-  {
-    id: 'microsoft-python', title: 'Python for Beginners', provider: 'Microsoft Learn',
-    providerUrl: 'https://learn.microsoft.com/training/paths/beginner-python/', category: 'Technology',
-    skills: ['Python', 'Programming fundamentals', 'Problem solving'], level: 'Beginner',
-    duration: 'Self-paced learning path', cost: 'Free', hasCertificate: false,
-    certificateNote: 'Free learning path; no separate certification is implied.',
-    summary: 'Refresh programming fundamentals with Microsoft\'s beginner-friendly Python learning path.',
-  },
-  {
-    id: 'google-ai', title: 'Google AI Learning Resources', provider: 'Google', providerUrl: 'https://ai.google/education/',
-    category: 'Artificial Intelligence', skills: ['AI fundamentals', 'Generative AI', 'Machine learning'], level: 'Beginner',
-    duration: 'Varies by resource', cost: 'Free', hasCertificate: false,
-    certificateNote: 'Learning resources vary; check each item for any credential.',
-    summary: 'Explore Google\'s educational resources for AI and machine learning fundamentals.',
-  },
-  {
-    id: 'aws-cloud', title: 'AWS Cloud Practitioner Essentials', provider: 'AWS Skill Builder',
-    providerUrl: 'https://skillbuilder.aws/', category: 'Cloud Computing',
-    skills: ['Cloud fundamentals', 'AWS', 'Security', 'Cloud services'], level: 'Beginner',
-    duration: 'Self-paced course; check provider', cost: 'Free', hasCertificate: false,
-    certificateNote: 'Training access and certification exam fees are separate; verify current terms.',
-    summary: 'Build a foundation in cloud concepts and AWS services through official AWS training.',
-  },
-  {
-    id: 'oracle-sql', title: 'Oracle SQL Learning Resources', provider: 'Oracle',
-    providerUrl: 'https://www.oracle.com/database/technologies/appdev/sql.html', category: 'Data Analytics',
-    skills: ['SQL', 'Databases', 'Querying', 'Data management'], level: 'Beginner',
-    duration: 'Varies by resource', cost: 'Free', hasCertificate: false,
-    certificateNote: 'Free learning resources do not automatically include a certification.',
-    summary: 'Refresh SQL and database foundations with Oracle\'s official learning resources.',
   },
 ];
 
