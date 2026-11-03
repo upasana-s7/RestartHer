@@ -19,6 +19,7 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState('');
   const [changeRequest, setChangeRequest] = useState('');
+  const [editingProfile, setEditingProfile] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
@@ -95,6 +96,33 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
 
         {roadmap && (
           <section className="mt-10">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-burgundy/15 bg-cream-light p-5">
+              <div><p className="editorial-label">Career profile</p><h2 className="mt-2 font-display text-xl font-bold text-ink">Your goals can change.</h2><p className="mt-1 text-sm text-ink/70">Edit your assessment answers whenever your priorities shift, then rebuild the plan.</p></div>
+              <button type="button" onClick={() => setEditingProfile((value) => !value)} className={buttonClass('outline')}>{editingProfile ? 'Close profile editor' : 'Edit my answers'}</button>
+            </div>
+            {editingProfile && (
+              <div className="mb-6 rounded-[1.5rem] border border-burgundy/15 bg-white p-6 shadow-card sm:p-8">
+                <div className="space-y-5">
+                  {ASSESSMENT_QUESTIONS.map((question, index) => (
+                    <div key={question.key}>
+                      <label htmlFor={'edit-' + question.key} className={LABEL_CLASS}>0{index + 1}. {question.label}</label>
+                      {'multiline' in question && question.multiline ? (
+                        <textarea id={'edit-' + question.key} rows={3} value={answers[question.key]} onChange={(event) => updateAnswer(question.key, event.target.value)} className={FIELD_CLASS + ' mt-1 resize-y'} />
+                      ) : (
+                        <input id={'edit-' + question.key} value={answers[question.key]} onChange={(event) => updateAnswer(question.key, event.target.value)} className={FIELD_CLASS + ' mt-1'} />
+                      )}
+                    </div>
+                  ))}
+                  <div><label htmlFor="edit-personal-context" className={LABEL_CLASS}>Additional context (optional)</label><textarea id="edit-personal-context" rows={3} maxLength={1500} value={answers.personalContext} onChange={(event) => updateAnswer('personalContext', event.target.value)} className={FIELD_CLASS + ' mt-1 resize-y'} /></div>
+                </div>
+                {error && <p role="alert" className="mt-4 text-sm text-burgundy">{error}</p>}
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <button type="button" disabled={!complete || generating} onClick={() => void generate('Please rebuild this roadmap from my updated assessment answers. Re-evaluate removed or added skills and fit the duration and availability.')} className={buttonClass('primary', 'gap-2')}>{generating ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />} Update profile & rebuild plan</button>
+                  <button type="button" onClick={() => setEditingProfile(false)} className={buttonClass('outline')}>Cancel</button>
+                </div>
+                <p className="mt-3 text-xs text-muted">Review the rebuilt roadmap and confirm it to save the updated assessment and plan.</p>
+              </div>
+            )}
             <div className="rounded-[1.5rem] border border-burgundy/15 bg-white p-7 shadow-card sm:p-10">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="editorial-label flex items-center gap-2"><Sparkles className="h-4 w-4" /> Your personal roadmap</p>
