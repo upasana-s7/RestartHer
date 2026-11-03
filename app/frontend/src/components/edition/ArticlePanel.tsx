@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Bookmark, BookmarkCheck } from 'lucide-react';
 import { useInView } from '@/hooks/useInView';
 import { cn } from '@/lib/cn';
 import type { Article } from '@/types/content';
@@ -37,9 +37,11 @@ interface ArticlePanelProps {
   tone: Tone;
   imageOnLeft: boolean;
   onRead: (article: Article) => void;
+  saved: boolean;
+  onToggleSave: () => void;
 }
 
-export default function ArticlePanel({ article, tone, imageOnLeft, onRead }: ArticlePanelProps) {
+export default function ArticlePanel({ article, tone, imageOnLeft, onRead, saved, onToggleSave }: ArticlePanelProps) {
   const { ref, inView } = useInView<HTMLElement>(0.15);
   const palette = TONES[tone];
 
@@ -89,6 +91,10 @@ export default function ArticlePanel({ article, tone, imageOnLeft, onRead }: Art
             <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
           </button>
           <span className={cn('font-label text-xs uppercase tracking-wider', palette.label)}>{article.readingTime}</span>
+          <button type="button" onClick={onToggleSave} aria-pressed={saved} className={cn('inline-flex items-center gap-2 rounded-md border border-current px-3 py-2 text-xs font-semibold transition-colors', palette.label, 'hover:bg-burgundy/5')}>
+            {saved ? <BookmarkCheck className="h-4 w-4" aria-hidden="true" /> : <Bookmark className="h-4 w-4" aria-hidden="true" />}
+            {saved ? 'Saved story' : 'Save story'}
+          </button>
         </div>
       </div>
     </article>
