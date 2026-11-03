@@ -163,7 +163,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         skills: '',
         career_goals: '',
       };
-      const { error } = await supabase.from('candidate_profiles').insert(saved);
+      const { error } = await supabase.from('candidate_profiles').upsert(
+        { ...saved, user_id: session.user.id },
+        { onConflict: 'user_id' },
+      );
       if (error) return PROFILE_SAVE_ERROR;
       setProfile(saved);
       setProfileError(null);
