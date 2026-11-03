@@ -58,7 +58,7 @@ export async function generateCareerRoadmap(answers: CareerAssessment, revision 
     'AVAILABLE COURSE CATALOGUE: ' + JSON.stringify(catalogue),
     revision ? 'REQUESTED CHANGE: ' + revision + '. Revise the plan to honour this while preserving useful parts.' : '',
   ].filter(Boolean).join('\n');
-  const raw = await sendCompanionMessage(prompt);
+  const raw = await sendCompanionMessage(prompt, [], 'roadmap');
   const start = raw.indexOf('{');
   const end = raw.lastIndexOf('}');
   if (start < 0 || end <= start) throw new Error('The AI response was not a usable roadmap. Please try generating it again.');
