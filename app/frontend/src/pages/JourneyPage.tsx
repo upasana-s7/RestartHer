@@ -131,20 +131,33 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
               <h2 className="mt-4 font-display text-3xl font-bold text-ink">{roadmap.title}</h2>
               <p className="mt-2 font-label text-sm font-semibold text-burgundy">Career direction: {roadmap.targetRole} · {roadmap.durationWeeks} weeks</p>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-ink/75">{roadmap.overview}</p>
-              <div className="mt-8 space-y-5">
-                {roadmap.weeklyPlan.map((week, index) => (
-                  <article key={week.week} className="rounded-xl border border-burgundy/15 bg-cream-light p-5 sm:p-6">
-                    <p className="editorial-label">Week {week.week}</p>
-                    <label className={LABEL_CLASS}>Focus</label>
-                    <input value={week.focus} onChange={(event) => editWeek(index, 'focus', event.target.value)} disabled={confirmed} className={FIELD_CLASS + ' mt-1'} />
-                    <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-muted">Topics</p>
-                    <p className="mt-1 text-sm text-ink/80">{week.topics.join(' · ')}</p>
-                    <label className={LABEL_CLASS + ' mt-4'}>Learning tasks (one per line)</label>
-                    <textarea rows={3} value={week.tasks.join('\n')} onChange={(event) => editWeek(index, 'tasks', event.target.value)} disabled={confirmed} className={FIELD_CLASS + ' mt-1 resize-y'} />
-                    <label className={LABEL_CLASS + ' mt-4'}>Your milestone</label>
-                    <input value={week.milestone} onChange={(event) => editWeek(index, 'milestone', event.target.value)} disabled={confirmed} className={FIELD_CLASS + ' mt-1'} />
-                  </article>
-                ))}
+              <div className="mt-8 space-y-8">
+                {[
+                  { title: 'Phase 1 · Foundations & refresh', from: 0, to: Math.max(1, Math.ceil(roadmap.weeklyPlan.length / 4)) },
+                  { title: 'Phase 2 · Guided practice', from: Math.max(1, Math.ceil(roadmap.weeklyPlan.length / 4)), to: Math.max(2, Math.ceil(roadmap.weeklyPlan.length / 2)) },
+                  { title: 'Phase 3 · Applied skills', from: Math.max(2, Math.ceil(roadmap.weeklyPlan.length / 2)), to: Math.max(3, Math.ceil(roadmap.weeklyPlan.length * 3 / 4)) },
+                  { title: 'Phase 4 · Career readiness', from: Math.max(3, Math.ceil(roadmap.weeklyPlan.length * 3 / 4)), to: roadmap.weeklyPlan.length },
+                ].map((phase, phaseIndex) => {
+                  const phaseWeeks = roadmap.weeklyPlan.slice(phase.from, phase.to);
+                  if (!phaseWeeks.length) return null;
+                  return <section key={phase.title}>
+                    <div className="mb-3 flex items-center gap-3"><span className="flex h-8 w-8 items-center justify-center rounded-full bg-burgundy text-xs font-semibold text-cream">{phaseIndex + 1}</span><h3 className="font-display text-xl font-bold text-ink">{phase.title}</h3></div>
+                    <div className="ml-4 border-l-2 border-burgundy/15 pl-5 sm:ml-5 sm:pl-7">
+                      {phaseWeeks.map((week) => {
+                        const index = roadmap.weeklyPlan.findIndex((item) => item.week === week.week);
+                        return <article key={week.week} className="border-b border-burgundy/10 py-5 last:border-b-0">
+                          <p className="editorial-label">Week {week.week} · Focus</p>
+                          <input aria-label={`Week ${week.week} focus`} value={week.focus} onChange={(event) => editWeek(index, 'focus', event.target.value)} disabled={confirmed} className={FIELD_CLASS + ' mt-2'} />
+                          <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-muted">Topics covered</p><p className="mt-1 text-sm leading-6 text-ink/80">{week.topics.join(' · ')}</p>
+                          <label className={LABEL_CLASS + ' mt-4'}>Practical learning tasks</label>
+                          <textarea aria-label={`Week ${week.week} practical learning tasks`} rows={3} value={week.tasks.join('\n')} onChange={(event) => editWeek(index, 'tasks', event.target.value)} disabled={confirmed} className={FIELD_CLASS + ' mt-1 resize-y'} />
+                          <label className={LABEL_CLASS + ' mt-4'}>Milestone / evidence of progress</label>
+                          <input aria-label={`Week ${week.week} milestone`} value={week.milestone} onChange={(event) => editWeek(index, 'milestone', event.target.value)} disabled={confirmed} className={FIELD_CLASS + ' mt-1'} />
+                        </article>;
+                      })}
+                    </div>
+                  </section>;
+                })}
               </div>
               {!confirmed ? (
                 <>
