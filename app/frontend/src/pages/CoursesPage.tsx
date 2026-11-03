@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BookmarkCheck, Search, Sparkles } from 'lucide-react';
 import { COURSES, COURSE_CATEGORIES, COURSE_PROVIDERS } from '@/data/courses';
 import { DEFAULT_COURSE_FILTERS, filterCourses, type CourseFilters } from '@/lib/courseFilters';
@@ -9,6 +9,8 @@ import CourseModal from '@/components/learning/CourseModal';
 import PageHeader from '@/components/ui/PageHeader';
 import { FIELD_CLASS, LABEL_CLASS } from '@/components/ui/controls';
 import { buttonClass } from '@/components/ui/buttonClass';
+import { useAuth } from '@/hooks/useAuth';
+import { loadCareerRoadmap } from '@/lib/journey';
 
 type Tab = 'recommended' | 'explore';
 
@@ -17,6 +19,14 @@ export default function CoursesPage() {
   const [filters, setFilters] = useState<CourseFilters>(DEFAULT_COURSE_FILTERS);
   const [saved, setSaved] = useState<Set<string>>(new Set());
   const [openCourse, setOpenCourse] = useState<Course | null>(null);
+  const { user } = useAuth();
+  const [roadmapCourseIds, setRoadmapCourseIds] = useState<string[]>([]);
+  useEffect(() => {
+    if (!user?.id) return;
+    const roadmap = loadCareerRoadmap(user.id);
+    setRoadmapCourseIds(roadmap?.confirmedAt ? Array.from(new Set(roadmap.weeklyPlan.flatMap((week) => week.courseIds))) : []);
+  }, [user?.id]);
+  const journeyCourses = COURSES.filter((course) => roadmapCourseIds.includes(course.id));
 
   const results = useMemo(() => filterCourses(COURSES, filters), [filters]);
 
@@ -62,20 +72,25 @@ export default function CoursesPage() {
         </div>
 
         {tab === 'recommended' ? (
-          <div className="mt-10 rounded-[1.5rem] border border-burgundy/15 bg-white p-8 shadow-card sm:p-12">
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-burgundy-soft text-burgundy">
-              <Sparkles className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <h2 className="mt-6 font-display text-3xl font-bold text-ink">Recommendations start with your journey</h2>
-            <p className="mt-4 max-w-2xl text-base leading-[1.7] text-ink/75">
-              Once your career journey is set up, we will suggest courses that match your goals, skills to develop and
-              current roadmap phase. Until then, you can explore the full catalogue at any time.
-            </p>
-            <div className="mt-8">
-              <button type="button" onClick={() => setTab('explore')} className={buttonClass('outline')}>
-                Explore all courses
-              </button>
-            </div>
+          <div className="mt-10">
+            {journeyCourses.length ? (
+              <>
+                <div className="mb-6 rounded-xl border border-burgundy/15 bg-white p-6">
+                  <p className="editorial-label flex items-center gap-2"><Sparkles className="h-4 w-4" /> Matched to your confirmed roadmap</p>
+                  <p className="mt-2 text-sm text-ink/70">These courses were selected from the learning milestones in your personal plan.</p>
+                </div>
+                <div className="grid gap-6 md:grid-cols-2">
+                  {journeyCourses.map((course) => <CourseCard key={course.id} course={course} saved={saved.has(course.id)} onToggleSave={toggleSave} onOpen={setOpenCourse} />)}
+                </div>
+              </>
+            ) : (
+              <div className="rounded-[1.5rem] border border-burgundy/15 bg-white p-8 shadow-card sm:p-12">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-burgundy-soft text-burgundy"><Sparkles className="h-5 w-5" aria-hidden="true" /></span>
+                <h2 className="mt-6 font-display text-3xl font-bold text-ink">Recommendations start with your journey</h2>
+                <p className="mt-4 max-w-2xl text-base leading-[1.7] text-ink/75">Complete and confirm your career roadmap first. We will show the courses matched to its learning milestones here. You can explore the full catalogue at any time.</p>
+                <div className="mt-8"><button type="button" onClick={() => setTab('explore')} className={buttonClass('outline')}>Explore all courses</button></div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="mt-10">
