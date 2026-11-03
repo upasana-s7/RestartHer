@@ -29,9 +29,9 @@ export default function CourseCard({ course, saved, onToggleSave, onOpen }: Cour
         </button>
       </div>
 
-      <button type="button" onClick={() => onOpen(course)} className="mt-3 text-left">
+      <a href={course.providerUrl} target="_blank" rel="noopener noreferrer" className="mt-3 text-left">
         <h3 className="font-display text-xl font-bold leading-snug text-ink transition-colors group-hover:text-burgundy">{course.title}</h3>
-      </button>
+      </a>
       <p className="mt-3 text-sm leading-[1.6] text-ink/75">{course.summary}</p>
 
       <ul className="mt-5 flex flex-wrap gap-2 text-xs text-ink/80">
@@ -54,7 +54,7 @@ export default function CourseCard({ course, saved, onToggleSave, onOpen }: Cour
         onClick={() => onOpen(course)}
         className="mt-auto self-start pt-6 font-label text-sm font-semibold text-burgundy transition-colors hover:text-burgundy-deep"
       >
-        View course details →
+        Open official course →
       </button>
     </article>
   );
