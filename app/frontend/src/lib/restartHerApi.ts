@@ -7,7 +7,8 @@ const COMPANION_ACTION = API_BASE_URL
 export async function sendCompanionMessage(message: string, history: Array<{ role: 'user' | 'assistant'; text: string }> = [], mode: 'chat' | 'roadmap' = 'chat'): Promise<string> {
   const trimmed = message.trim();
   if (!trimmed) throw new Error('Please enter a message.');
-  if (trimmed.length > 4000) throw new Error('Please keep messages under 4,000 characters.');
+  const maxLength = mode === 'roadmap' ? 12000 : 4000;
+  if (trimmed.length > maxLength) throw new Error(mode === 'roadmap' ? 'Your roadmap request is too long. Please shorten the extra details and try again.' : 'Please keep messages under 4,000 characters.');
   let response: Response;
   try {
     response = await fetch(COMPANION_ACTION, {
