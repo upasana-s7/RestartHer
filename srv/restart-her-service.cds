@@ -46,5 +46,5 @@ action evaluateInterviewAnswer(
 ) returns restarther.InterviewFeedback;
 
     // Server-side Gemini companion. The API key is never sent to the browser.
-    action chatWithCompanion(message : LargeString) returns restarther.AICompanionReply;
+    action chatWithCompanion(message : LargeString, history : LargeString) returns restarther.AICompanionReply;
 }

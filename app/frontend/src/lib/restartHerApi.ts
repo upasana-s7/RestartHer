@@ -2,14 +2,17 @@ export interface CompanionReply { reply: string; }
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
 const COMPANION_ACTION = API_BASE_URL + '/odata/v4/restart-her/chatWithCompanion';
 
-export async function sendCompanionMessage(message: string): Promise<string> {
+export async function sendCompanionMessage(message: string, history: Array<{ role: 'user' | 'assistant'; text: string }> = []): Promise<string> {
   const trimmed = message.trim();
   if (!trimmed) throw new Error('Please enter a message.');
   if (trimmed.length > 4000) throw new Error('Please keep messages under 4,000 characters.');
   const response = await fetch(COMPANION_ACTION, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({ message: trimmed }),
+    body: JSON.stringify({
+      message: trimmed,
+      history: JSON.stringify(history.slice(-10).map((item) => ({ role: item.role === 'assistant' ? 'model' : 'user', text: item.text }))),
+    }),
   });
   const payload: unknown = await response.json().catch(() => null);
   if (!response.ok) {

@@ -850,6 +850,21 @@ export default class RestartHERService extends cds.ApplicationService {
                 return req.reject(400, 'Please keep messages under 4,000 characters.');
             }
 
+            let history = [];
+            if (typeof req.data.history === 'string' && req.data.history.trim()) {
+                try {
+                    history = JSON.parse(req.data.history);
+                } catch {
+                    return req.reject(400, 'Conversation history is invalid.');
+                }
+                if (!Array.isArray(history) || history.length > 10 || history.some((item) =>
+                    !item || !['user', 'model'].includes(item.role) ||
+                    typeof item.text !== 'string' || !item.text.trim() || item.text.length > 4000
+                )) {
+                    return req.reject(400, 'Conversation history is invalid or too long.');
+                }
+            }
+
             const apiKey = process.env.GEMINI_API_KEY;
             if (!apiKey) {
                 return req.reject(503, 'The AI companion is not configured yet. Add GEMINI_API_KEY to the backend environment.');
@@ -877,7 +892,10 @@ export default class RestartHERService extends cds.ApplicationService {
                         },
                         body: JSON.stringify({
                             systemInstruction: { parts: [{ text: systemInstruction }] },
-                            contents: [{ role: 'user', parts: [{ text: message }] }],
+                            contents: [
+                                ...history.map((item) => ({ role: item.role, parts: [{ text: item.text }] })),
+                                { role: 'user', parts: [{ text: message }] }
+                            ],
                             generationConfig: { maxOutputTokens: 600 }
                         }),
                         signal: AbortSignal.timeout(30000)

@@ -21,7 +21,7 @@ export default function AiCompanion({ open, onClose }: AiCompanionProps) {
     setMessages((current) => [...current, { id: nextId.current++, role: 'user', text }]);
     setDraft(''); setError(null); setThinking(true);
     try {
-      const reply = await sendCompanionMessage(text);
+      const reply = await sendCompanionMessage(text, messages.filter((item) => item.id !== 0).slice(-10));
       setMessages((current) => [...current, { id: nextId.current++, role: 'assistant', text: reply }]);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'The AI companion is temporarily unavailable.');
