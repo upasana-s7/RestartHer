@@ -114,7 +114,7 @@ export default function MentorshipPage() {
             <div>
               <p className="editorial-label">Optional paid guidance</p>
               <h2 className="mt-2 font-display text-2xl font-bold text-ink">More dedicated time with a mentor</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-ink/75">The free option lets you select a mentor in this demo. Paid plans are a pricing concept for more focused one-on-one career guidance, online sessions and follow-up support.</p>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-ink/75">Free access is designed for mentor selection and lighter online mentor support. Paid plans are a concept for dedicated one-on-one guidance, longer Google Meet sessions and follow-up support.</p>
             </div>
           </div>
           <div className="mt-6 grid gap-5 md:grid-cols-3">
