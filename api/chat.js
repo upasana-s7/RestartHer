@@ -1,5 +1,5 @@
 const MAX_MESSAGE_LENGTH = 4000;
-const MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+const MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
