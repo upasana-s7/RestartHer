@@ -169,14 +169,31 @@
 }
 
 @keyframes splash-art {
-  from {
+  0% {
     opacity: 0;
-    transform: scale(1.06);
+    transform: scale(1.045) translateY(5px);
     filter: saturate(0.9) brightness(0.78);
   }
-  to {
+  18% {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1.008) translateY(0);
+    filter: saturate(1) brightness(1);
+  }
+  38% {
+    opacity: 1;
+    transform: scale(1.002) translateY(-2px);
+  }
+  62% {
+    opacity: 1;
+    transform: scale(1.006) translateY(2px);
+  }
+  82% {
+    opacity: 1;
+    transform: scale(1.002) translateY(-1px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
     filter: saturate(1) brightness(1);
   }
 }
