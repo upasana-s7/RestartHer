@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { BadgeCheck, BriefcaseBusiness, CalendarDays, Check, MessageCircleHeart, Sparkles, UsersRound, X } from 'lucide-react';
+import { BadgeCheck, BriefcaseBusiness, Check, MessageCircleHeart, Sparkles, UsersRound, X } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 import { buttonClass } from '@/components/ui/buttonClass';
 import { cn } from '@/lib/cn';
