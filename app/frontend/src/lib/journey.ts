@@ -9,6 +9,7 @@ export interface CareerAssessment {
   learningNeeds: string;
   availability: string;
   biggestBarrier: string;
+  personalContext: string;
 }
 export interface RoadmapWeek {
   week: number;
@@ -27,52 +28,53 @@ export interface CareerRoadmap {
   confirmedAt?: string;
   assessment?: CareerAssessment;
 }
-export const ASSESSMENT_QUESTIONS: Array<{ key: keyof CareerAssessment; label: string; hint: string; options: string[] }> = [
+type AssessmentQuestionKey = Exclude<keyof CareerAssessment, 'personalContext'>;
+export const ASSESSMENT_QUESTIONS: Array<{ key: AssessmentQuestionKey; label: string; hint: string; placeholder: string; multiline?: boolean }> = [
   {
     key: 'previousRole',
-    label: 'What was your previous professional role or field?',
-    hint: 'Choose the closest match to the work or profession you were part of before your break.',
-    options: ['Software / IT', 'Data / analytics', 'Business / operations', 'Finance / accounting', 'Marketing / communications', 'Design / creative', 'Education / research', 'Healthcare', 'Human resources', 'Sales / customer support', 'Engineering / manufacturing', 'Other professional field'],
+    label: 'What was your previous role or field?',
+    hint: 'Tell us your job title, industry or area of work.',
+    placeholder: 'E.g. Software engineer, accountant, teacher, project manager',
   },
   {
     key: 'breakDuration',
-    label: 'How long have you been on a career break?',
-    hint: 'There is no wrong answer. This helps us understand how much refreshing may be useful.',
-    options: ['Less than 6 months', '6–12 months', '1–2 years', '2–5 years', '5–10 years', 'More than 10 years'],
+    label: 'How long have you been away from work?',
+    hint: 'An approximate duration is perfectly fine.',
+    placeholder: 'E.g. 3 years, 5–10 years, since 2019',
   },
   {
     key: 'existingSkills',
-    label: 'Which skills and experience do you already bring?',
-    hint: 'Choose the closest description of your previous work and strengths.',
-    options: ['Professional experience in my field', 'Technical tools and job-specific skills', 'Project, team or people management', 'Communication, client or stakeholder skills', 'A combination of these', 'I need help identifying my transferable skills'],
+    label: 'What experience and skills do you already have?',
+    hint: 'Mention your responsibilities, tools, strengths or areas of expertise.',
+    placeholder: 'E.g. Team management, Excel, client communication, SQL', multiline: true,
   },
   {
     key: 'targetRole',
-    label: 'What role or field would you like to return to?',
-    hint: 'Choose your preferred direction, even if you want to return to a slightly different role.',
-    options: ['Return to my previous role / field', 'Technology and IT', 'Data and analytics', 'AI and machine learning', 'Business and operations', 'Finance', 'Marketing and communications', 'Design and creative work', 'Human resources', 'Education / research', 'Not sure yet'],
+    label: 'What kind of role would you like to return to?',
+    hint: 'You can name a specific job or a broader field.',
+    placeholder: 'E.g. Data analyst, software developer, finance, or my previous role',
   },
   {
     key: 'learningNeeds',
-    label: 'What would you most like to refresh or develop?',
-    hint: 'This helps us focus your learning plan on the skills that matter to your return.',
-    options: ['Refresh tools and technical skills', 'Learn new tools used in my field', 'Build practical projects or a portfolio', 'Update industry knowledge', 'Prepare my resume and interviews', 'Rebuild confidence and communication', 'A balanced combination'],
+    label: 'What would you like to refresh or learn?',
+    hint: 'Tell us which skills, tools or knowledge you want to work on.',
+    placeholder: 'E.g. Refresh Python and SQL, learn current industry tools', multiline: true,
   },
   {
     key: 'availability',
-    label: 'How much time can you set aside for your return-to-work plan?',
-    hint: 'Choose a realistic daily pace and target duration. You can change this later.',
-    options: ['30 min/day · 30 days', '1 hour/day · 30 days', '2 hours/day · 30 days', '1 hour/day · 45 days', '2 hours/day · 45 days', '1 hour/day · 60 days', '2 hours/day · 60 days', '1 hour/day · 90 days', '2 hours/day · 90 days'],
+    label: 'How much time can you commit?',
+    hint: 'Include your daily study time and the time you want your plan to cover.',
+    placeholder: 'E.g. 1 hour a day for 30 days',
   },
   {
     key: 'biggestBarrier',
-    label: 'What is your biggest challenge in returning to work?',
-    hint: 'Your plan will include practical support for the challenge you select.',
-    options: ['Lack of confidence after the break', 'Outdated skills or unfamiliar tools', 'Explaining my career gap', 'Balancing learning with family or other responsibilities', 'Uncertainty about suitable roles', 'Resume and interview preparation', 'Finding flexible or returnship opportunities', 'I am not sure where to restart'],
+    label: 'What feels like your biggest challenge right now?',
+    hint: 'Be honest. This helps us make the plan more supportive and realistic.',
+    placeholder: 'E.g. Low confidence, outdated skills, explaining my career break',
   },
 ];
 export function emptyAssessment(): CareerAssessment {
-  return { previousRole: '', breakDuration: '', existingSkills: '', targetRole: '', learningNeeds: '', availability: '1 hour/day · 30 days', biggestBarrier: '' };
+  return { previousRole: '', breakDuration: '', existingSkills: '', targetRole: '', learningNeeds: '', availability: '', biggestBarrier: '', personalContext: '' };
 }
 export function loadCareerRoadmap(userId: string): CareerRoadmap | null {
   try {
@@ -98,7 +100,7 @@ export async function generateCareerRoadmap(answers: CareerAssessment, revision 
     'You are creating a career re-entry plan for a woman with prior professional experience who is returning after a career break. Do not treat her as a student or first-time job seeker.',
     'Return ONLY valid JSON with this exact shape:',
     '{"title":"short title","targetRole":"target role","overview":"where she stands now, what she aims to achieve and how this plan helps","durationWeeks":' + targetWeeks + ',"weeklyPlan":[{"week":1,"focus":"focus","topics":["topic"],"tasks":["specific task","specific task"],"milestone":"observable result","courseIds":["valid catalogue id"]}]}',
-    'Create exactly ' + targetWeeks + ' weeks to fit the selected target duration. Each week needs 1-3 topics, 2-3 specific achievable tasks and one observable milestone. Respect the selected daily time. Build on prior professional experience, identify transferable skills, and focus on refreshing or developing the skills needed for the selected return role. Include practical assignments and resume/interview preparation at a suitable stage. Be supportive about the career gap; never frame it as failure. Use only courseIds from the supplied catalogue; use [] when none fit. Do not invent courses, certificates, jobs, salaries or guarantees. Keep wording concise.',
+    'Create exactly ' + targetWeeks + ' weeks. Each week needs 1-3 topics, 2-3 achievable tasks and one observable milestone. Respect the daily time and target duration she described. Build on prior experience, refresh relevant skills, include practical work and suitable resume/interview preparation. Be encouraging about the career gap. Use only courseIds from the catalogue; use [] when none fit. Do not invent courses, certificates, jobs, salaries or guarantees. Keep concise.',
     'CAREER RETURN ASSESSMENT: ' + JSON.stringify(answers),
     'AVAILABLE COURSES: ' + JSON.stringify(catalogue),
     revision ? 'REQUESTED CHANGE: ' + revision + '. Apply it while keeping the plan concise.' : '',
