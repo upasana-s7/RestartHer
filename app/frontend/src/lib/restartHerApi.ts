@@ -11,18 +11,18 @@ export async function sendCompanionMessage(message: string, history: Array<{ rol
   let response: Response;
   try {
     response = await fetch(COMPANION_ACTION, {
-    method: 'POST',
-    signal: AbortSignal.timeout(mode === 'roadmap' ? 45000 : 20000),
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({
-      message: trimmed,
-      mode,
-      history: JSON.stringify(history.slice(-10).map((item) => ({ role: item.role === 'assistant' ? 'model' : 'user', text: item.text }))),
-    }),
+      method: 'POST',
+      signal: AbortSignal.timeout(mode === 'roadmap' ? 30000 : 20000),
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        message: trimmed,
+        mode,
+        history: JSON.stringify(history.slice(-8).map((item) => ({ role: item.role === 'assistant' ? 'model' : 'user', text: item.text }))),
+      }),
     });
   } catch (cause) {
-    if (cause instanceof Error && cause.name === 'TimeoutError') {
-      throw new Error(mode === 'roadmap' ? 'The roadmap is taking longer than expected. Please try again.' : 'The AI is taking too long to respond. Please try again.');
+    if (cause instanceof Error && (cause.name === 'TimeoutError' || cause.name === 'AbortError')) {
+      throw new Error(mode === 'roadmap' ? 'The AI service took too long to build your roadmap. Please try again.' : 'The AI is taking too long to respond. Please try again.');
     }
     throw new Error('Could not reach the AI service. Please check your connection and try again.');
   }
