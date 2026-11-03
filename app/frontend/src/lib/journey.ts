@@ -90,9 +90,9 @@ export function saveCareerRoadmap(userId: string, roadmap: CareerRoadmap): void 
   localStorage.setItem('restarther_roadmap_v1_' + userId, JSON.stringify(roadmap));
 }
 function getTargetWeeks(availability: string): number {
-  const weeks = availability.match(/(\\d+)\\s*weeks?/i);
-  const months = availability.match(/(\\d+)\\s*months?/i);
-  const days = availability.match(/(\\d+)\\s*days?/i);
+  const weeks = availability.match(/(\d+)\s*weeks?/i);
+  const months = availability.match(/(\d+)\s*months?/i);
+  const days = availability.match(/(\d+)\s*days?/i);
   const totalWeeks = weeks ? Number(weeks[1]) : months ? Number(months[1]) * 4 : days ? Math.ceil(Number(days[1]) / 7) : 4;
   return Math.max(1, Math.min(26, totalWeeks));
 }
