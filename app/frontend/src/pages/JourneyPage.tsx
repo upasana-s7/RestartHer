@@ -59,13 +59,13 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
   return (
     <div className="px-5 py-12 sm:px-8 lg:px-12 lg:py-16">
       <div className="mx-auto max-w-6xl">
-        <PageHeader eyebrow="My Journey" title="Your comeback, step by step." description="A guided career reset built around your experience, goals and the time you have available." />
+        <PageHeader eyebrow="My Journey" title="Your comeback, step by step." description="A guided return-to-work plan built around your previous experience, career break, target role and available time." />
 
         {!roadmap && (
           <section className="mt-10 rounded-[1.5rem] border border-burgundy/15 bg-white p-7 shadow-card sm:p-10">
             <div className="flex items-center gap-3 text-burgundy"><span className="flex h-11 w-11 items-center justify-center rounded-full bg-burgundy-soft"><Compass className="h-5 w-5" /></span><p className="editorial-label">Your guided journey</p></div>
             <h2 className="mt-6 font-display text-3xl font-bold text-ink">Let's build a plan that fits your life.</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-ink/75">Seven quick choices. No long answers needed. Your AI guide will turn them into a practical learning roadmap you can review and edit.</p>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-ink/75">Seven quick choices about your previous role, career break, existing strengths, return target and learning needs. Your AI guide will create a realistic plan you can review and edit.</p>
             <div className="mt-8 space-y-6">
               {ASSESSMENT_QUESTIONS.map((question, index) => (
                 <div key={question.key}>
@@ -82,7 +82,7 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
             <button type="button" disabled={!complete || generating} onClick={() => void generate()} className={buttonClass('primary', 'mt-8 gap-2')}>
               {generating ? <><LoaderCircle className="h-4 w-4 animate-spin" /> Building your plan…</> : <>Generate my roadmap <Sparkles className="h-4 w-4" /></>}
             </button>
-            {generating && <p className="mt-3 text-xs text-muted" aria-live="polite">Creating your four-week plan…</p>}
+            {generating && <p className="mt-3 text-xs text-muted" aria-live="polite">Creating your personalised career-return plan…</p>}
           </section>
         )}
 
@@ -126,7 +126,7 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
               ) : (
                 <div className="mt-8 rounded-xl bg-burgundy-soft p-5">
                   <p className="font-semibold text-ink">Your roadmap is confirmed.</p>
-                  <p className="mt-1 text-sm text-ink/75">Your learning schedule and course recommendations are now available in Learning.</p>
+                  <p className="mt-1 text-sm text-ink/75">Your learning schedule and course recommendations are now available in Learning. Your previous experience remains the starting point of this plan.</p>
                   <button type="button" onClick={() => onNavigate('learning')} className={buttonClass('primary', 'mt-4 gap-2')}>Open my learning plan <ArrowRight className="h-4 w-4" /></button>
                   <button type="button" onClick={() => { const draft = { ...roadmap, confirmedAt: undefined }; saveCareerRoadmap(userId, draft); setRoadmap(draft); setConfirmed(false); }} className="ml-4 mt-4 text-sm font-semibold text-burgundy underline">Make changes</button>
                 </div>
