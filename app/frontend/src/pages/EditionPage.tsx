@@ -56,6 +56,8 @@ export default function EditionPage({ onNavigate }: EditionPageProps) {
               tone={ARTICLE_TONES[index]}
               imageOnLeft={index % 2 === 0}
               onRead={setActiveArticle}
+              saved={savedArticles.has(article.id)}
+              onToggleSave={() => toggleSavedStory(article.id)}
             />
           ))}
         </div>
