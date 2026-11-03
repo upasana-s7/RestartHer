@@ -108,7 +108,6 @@ export default function CoursesPage() {
                     type="search"
                     value={filters.query}
                     onChange={(event) => update('query', event.target.value)}
-                    placeholder=""
                     className={cn(FIELD_CLASS, 'pl-10')}
                   />
                 </div>
