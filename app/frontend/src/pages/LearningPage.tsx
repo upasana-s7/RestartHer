@@ -3,12 +3,14 @@ import { ArrowRight, CheckCircle2, Compass, Sparkles } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 import { buttonClass } from '@/components/ui/buttonClass';
 import { useAuth } from '@/hooks/useAuth';
+import { useSectionRoute } from '@/hooks/useSectionRoute';
 import type { CareerRoadmap } from '@/lib/journey';
 import { loadCareerRoadmap } from '@/lib/journey';
 import { COURSES } from '@/data/courses';
 
 export default function LearningPage() {
   const { user } = useAuth();
+  const { setSection } = useSectionRoute();
   const [roadmap, setRoadmap] = useState<CareerRoadmap | null>(null);
   useEffect(() => {
     if (user?.id) setRoadmap(loadCareerRoadmap(user.id));
@@ -47,7 +49,7 @@ export default function LearningPage() {
             </div>
             <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
               <div><p className="font-display text-xl font-bold text-ink">Recommended courses</p><p className="mt-1 text-sm text-ink/70">Matched to the skills in your roadmap.</p></div>
-              <button type="button" onClick={() => window.location.hash = '#courses'} className={buttonClass('outline', 'gap-2')}>Explore all courses <ArrowRight className="h-4 w-4" /></button>
+              <button type="button" onClick={() => setSection('courses')} className={buttonClass('outline', 'gap-2')}>Explore all courses <ArrowRight className="h-4 w-4" /></button>
             </div>
             {recommendedCourses.length ? (
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -61,7 +63,7 @@ export default function LearningPage() {
             <p className="editorial-label mt-6">Roadmap workspace</p>
             <h2 className="mt-3 font-display text-3xl font-bold text-ink">Start with My Journey</h2>
             <p className="mt-4 max-w-2xl text-base leading-[1.7] text-ink/75">Complete the seven-question career assessment and confirm your AI-generated roadmap. Your weekly schedule and course recommendations will appear here.</p>
-            <button type="button" onClick={() => window.location.hash = '#journey'} className={buttonClass('primary', 'mt-8 gap-2')}>Open My Journey <ArrowRight className="h-4 w-4" /></button>
+            <button type="button" onClick={() => setSection('journey')} className={buttonClass('primary', 'mt-8 gap-2')}>Open My Journey <ArrowRight className="h-4 w-4" /></button>
           </section>
         )}
 
