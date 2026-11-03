@@ -51,7 +51,7 @@
     transform-origin: left;
   }
   .intro-splash-art {
-    animation: splash-art 3s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation: splash-art 5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
     transform-origin: center;
   }
   .intro-splash-vignette {
@@ -63,7 +63,7 @@
     filter: blur(18px);
     opacity: 0;
     transform: rotate(18deg) translateX(-80%);
-    animation: splash-glow 3s 0.45s ease-in-out both;
+    animation: splash-glow 5s 0.45s ease-in-out both;
     pointer-events: none;
   }
   .intro-splash-glow-right {
@@ -75,14 +75,14 @@
     background-size: 160% 140%, 140% 160%;
     mix-blend-mode: screen;
     opacity: 0;
-    animation: splash-fabric 3s 0.25s ease-in-out both;
+    animation: splash-fabric 5s 0.25s ease-in-out both;
     pointer-events: none;
   }
   .intro-splash-trail {
     background: linear-gradient(145deg, transparent 35%, rgb(255 219 155 / 0.2) 49%, transparent 52%);
     background-size: 220% 220%;
     opacity: 0;
-    animation: splash-trail 3s 0.35s ease-in-out both;
+    animation: splash-trail 5s 0.35s ease-in-out both;
     pointer-events: none;
   }
   .ticker-track {
