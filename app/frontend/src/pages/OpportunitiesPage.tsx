@@ -138,7 +138,6 @@ export default function OpportunitiesPage() {
                     type="search"
                     value={filters.query}
                     onChange={(event) => update('query', event.target.value)}
-                    placeholder="E.g. analyst, Pinecrest, SQL"
                     className={cn(FIELD_CLASS, 'pl-10')}
                   />
                 </div>
