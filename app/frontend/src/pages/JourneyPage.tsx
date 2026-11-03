@@ -65,28 +65,24 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
           <section className="mt-10 rounded-[1.5rem] border border-burgundy/15 bg-white p-7 shadow-card sm:p-10">
             <div className="flex items-center gap-3 text-burgundy"><span className="flex h-11 w-11 items-center justify-center rounded-full bg-burgundy-soft"><Compass className="h-5 w-5" /></span><p className="editorial-label">Your guided journey</p></div>
             <h2 className="mt-6 font-display text-3xl font-bold text-ink">Let's build a plan that fits your life.</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-ink/75">Answer seven short questions. Your AI guide will turn your answers into a practical learning roadmap. You can review, edit or regenerate it before confirming anything.</p>
-            <div className="mt-8 space-y-7">
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-ink/75">Seven quick choices. No long answers needed. Your AI guide will turn them into a practical learning roadmap you can review and edit.</p>
+            <div className="mt-8 space-y-6">
               {ASSESSMENT_QUESTIONS.map((question, index) => (
                 <div key={question.key}>
                   <label htmlFor={question.key} className={LABEL_CLASS}>0{index + 1}. {question.label}</label>
                   <p className="mb-2 text-xs text-muted">{question.hint}</p>
-                  {question.options ? (
-                    <select id={question.key} value={answers[question.key]} onChange={(event) => updateAnswer(question.key, event.target.value)} className={FIELD_CLASS}>
-                      <option value="">Choose an answer</option>
-                      {question.options.map((option) => <option key={option} value={option}>{option}</option>)}
-                    </select>
-                  ) : (
-                    <textarea id={question.key} rows={2} value={answers[question.key]} onChange={(event) => updateAnswer(question.key, event.target.value)} className={FIELD_CLASS + ' resize-y'} placeholder="Your answer..." />
-                  )}
+                  <select id={question.key} value={answers[question.key]} onChange={(event) => updateAnswer(question.key, event.target.value)} className={FIELD_CLASS}>
+                    <option value="">Choose one</option>
+                    {question.options.map((option) => <option key={option} value={option}>{option}</option>)}
+                  </select>
                 </div>
               ))}
             </div>
             {error && <p role="alert" className="mt-5 rounded-lg bg-burgundy-soft p-3 text-sm text-burgundy">{error}</p>}
             <button type="button" disabled={!complete || generating} onClick={() => void generate()} className={buttonClass('primary', 'mt-8 gap-2')}>
-              {generating ? <><LoaderCircle className="h-4 w-4 animate-spin" /> Creating your roadmap…</> : <>Generate my roadmap <Sparkles className="h-4 w-4" /></>}
+              {generating ? <><LoaderCircle className="h-4 w-4 animate-spin" /> Building your plan…</> : <>Generate my roadmap <Sparkles className="h-4 w-4" /></>}
             </button>
-            {generating && <p className="mt-3 text-xs text-muted" aria-live="polite">Your answers are being turned into a week-by-week plan. This can take a little time.</p>}
+            {generating && <p className="mt-3 text-xs text-muted" aria-live="polite">Creating your four-week plan…</p>}
           </section>
         )}
 
@@ -118,7 +114,7 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
               {!confirmed ? (
                 <>
                   <label htmlFor="roadmap-change" className={LABEL_CLASS + ' mt-8'}>Want AI to change something?</label>
-                  <textarea id="roadmap-change" rows={2} value={changeRequest} onChange={(event) => setChangeRequest(event.target.value)} className={FIELD_CLASS + ' mt-1 resize-y'} placeholder="E.g. make this a slower 6-week plan with more hands-on practice." />
+                  <textarea id="roadmap-change" rows={2} value={changeRequest} onChange={(event) => setChangeRequest(event.target.value)} className={FIELD_CLASS + ' mt-1 resize-y'} placeholder="E.g. make this plan more hands-on." />
                   {error && <p role="alert" className="mt-4 text-sm text-burgundy">{error}</p>}
                   <div className="mt-6 flex flex-wrap gap-3">
                     <button type="button" disabled={generating} onClick={() => void generate(changeRequest)} className={buttonClass('outline', 'gap-2')}>
