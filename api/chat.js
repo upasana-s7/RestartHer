@@ -1,4 +1,5 @@
-const MAX_MESSAGE_LENGTH = 4000;
+const CHAT_MAX_MESSAGE_LENGTH = 4000;
+const ROADMAP_MAX_MESSAGE_LENGTH = 12000;
 const CHAT_MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
 const ROADMAP_MODEL = process.env.GEMINI_ROADMAP_MODEL || 'gemini-3.5-flash-lite';
 
