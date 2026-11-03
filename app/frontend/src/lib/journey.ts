@@ -140,8 +140,7 @@ export function getRecommendedSapCourseIds(assessment?: CareerAssessment): strin
     { id: 'sap-ai-fundamentals', terms: ['ai', 'artificial intelligence', 'machine learning', 'technology', 'it', 'software'] },
     { id: 'sap-generative-ai-hub', terms: ['ai', 'artificial intelligence', 'generative', 'developer', 'technology'] },
     { id: 'sap-s4hana-cloud', terms: ['business', 'management', 'finance', 'operations', 'erp', 'consulting'] },
-    { id: 'sap-developer-learning', terms: ['technology', 'it', 'software', 'development', 'developer', 'programming', 'coding'] },
   ];
   const selected = matches.filter(({ terms }) => terms.some((term) => interests.includes(term))).map(({ id }) => id);
-  return selected.length ? selected : ['sap-learning-journeys'];
+  return selected.length ? selected : ['sap-analytics-cloud-data-analyst'];
 }
