@@ -855,7 +855,7 @@ export default class RestartHERService extends cds.ApplicationService {
                 return req.reject(503, 'The AI companion is not configured yet. Add GEMINI_API_KEY to the backend environment.');
             }
 
-            const model = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
+            const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
             const systemInstruction = [
                 'You are RestartHER, a warm, practical career-reentry companion.',
                 'Help people returning to work after a career break with skills, learning plans, confidence, interviews and career planning.',
