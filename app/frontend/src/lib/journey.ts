@@ -120,8 +120,8 @@ export async function generateCareerRoadmap(answers: CareerAssessment, revision 
   const weeklyPlan = value.weeklyPlan.slice(0, targetWeeks).map((week, index) => ({
     week: Number(week.week) || index + 1,
     focus: String(week.focus || 'Week ' + (index + 1)),
-    topics: Array.isArray(week.topics) ? week.topics.slice(0, 3).map(String) : [],
-    tasks: Array.isArray(week.tasks) ? week.tasks.slice(0, 3).map(String) : [],
+    topics: Array.isArray(week.topics) ? week.topics.slice(0, 4).map(String) : [],
+    tasks: Array.isArray(week.tasks) ? week.tasks.slice(0, 5).map(String) : [],
     milestone: String(week.milestone || 'Review what you have learned'),
     courseIds: Array.isArray(week.courseIds) ? week.courseIds.filter((id): id is string => typeof id === 'string' && validIds.has(id)) : [],
   }));
