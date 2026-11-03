@@ -116,3 +116,25 @@ export async function generateCareerRoadmap(answers: CareerAssessment, revision 
   }));
   return { title: value.title, targetRole: value.targetRole, overview: String(value.overview || ''), durationWeeks: weeklyPlan.length, weeklyPlan, assessment: answers };
 }
+
+
+/** Match official SAP learning resources to the learner's stated return-to-work direction. */
+export function getRecommendedSapCourseIds(assessment?: CareerAssessment): string[] {
+  if (!assessment) return [];
+  const interests = [assessment.targetRole, assessment.goal, assessment.existingSkills]
+    .join(' ')
+    .toLowerCase();
+  const matches: Array<{ id: string; terms: string[] }> = [
+    { id: 'sap-analytics-cloud-data-analyst', terms: ['data', 'analytics', 'analyst', 'dashboard', 'visualisation', 'visualization', 'reporting'] },
+    { id: 'sap-business-data-cloud', terms: ['data', 'analytics', 'analyst', 'business', 'machine learning'] },
+    { id: 'sap-bw4hana', terms: ['data', 'analytics', 'analyst', 'warehouse', 'database', 'reporting'] },
+    { id: 'sap-ai-fundamentals', terms: ['ai', 'artificial intelligence', 'machine learning', 'technology', 'it', 'software'] },
+    { id: 'sap-generative-ai-hub', terms: ['ai', 'artificial intelligence', 'generative', 'machine learning', 'developer', 'technology'] },
+    { id: 'sap-s4hana-cloud', terms: ['business', 'management', 'finance', 'operations', 'erp', 'consulting'] },
+    { id: 'sap-developer-learning', terms: ['technology', 'it', 'software', 'development', 'developer', 'programming', 'coding'] },
+  ];
+  const selected = matches
+    .filter(({ terms }) => terms.some((term) => interests.includes(term)))
+    .map(({ id }) => id);
+  return selected.length ? selected : ['sap-learning-journeys'];
+}
