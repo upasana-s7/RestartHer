@@ -94,3 +94,9 @@ type InterviewFeedback {
 
 
 
+
+
+// Response returned by the Gemini-powered RestartHER companion
+type AICompanionReply {
+    reply : LargeString;
+}
