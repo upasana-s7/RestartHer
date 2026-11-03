@@ -23,7 +23,7 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
   useEffect(() => {
     if (!userId) return;
     const saved = loadCareerRoadmap(userId);
-    if (saved) { setRoadmap(saved); setConfirmed(Boolean(saved.confirmedAt)); }
+    if (saved) { setRoadmap(saved); if (saved.assessment) setAnswers(saved.assessment); setConfirmed(Boolean(saved.confirmedAt)); }
   }, [userId]);
 
   const updateAnswer = (key: keyof CareerAssessment, value: string) =>
@@ -50,7 +50,8 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
     const weeklyPlan = roadmap.weeklyPlan.map((week, i) => i !== index ? week : {
       ...week, [field]: field === 'tasks' ? value.split('\n').filter(Boolean) : value,
     });
-    setRoadmap({ ...roadmap, weeklyPlan, confirmedAt: undefined }); setConfirmed(false);
+    const updated = { ...roadmap, weeklyPlan, confirmedAt: undefined };
+    setRoadmap(updated); if (userId) saveCareerRoadmap(userId, updated); setConfirmed(false);
   };
 
   const complete = ASSESSMENT_QUESTIONS.every(({ key }) => answers[key].trim().length > 0);
@@ -131,7 +132,7 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
                   <p className="font-semibold text-ink">Your roadmap is confirmed.</p>
                   <p className="mt-1 text-sm text-ink/75">Your learning schedule and course recommendations are now available in Learning.</p>
                   <button type="button" onClick={() => onNavigate('learning')} className={buttonClass('primary', 'mt-4 gap-2')}>Open my learning plan <ArrowRight className="h-4 w-4" /></button>
-                  <button type="button" onClick={() => { setRoadmap({ ...roadmap, confirmedAt: undefined }); setConfirmed(false); }} className="ml-4 mt-4 text-sm font-semibold text-burgundy underline">Make changes</button>
+                  <button type="button" onClick={() => { const draft = { ...roadmap, confirmedAt: undefined }; saveCareerRoadmap(userId, draft); setRoadmap(draft); setConfirmed(false); }} className="ml-4 mt-4 text-sm font-semibold text-burgundy underline">Make changes</button>
                 </div>
               )}
             </div>
