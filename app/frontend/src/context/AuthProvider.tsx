@@ -1,230 +1,108 @@
-import { useState, useEffect, useMemo, useRef, useCallback, type ReactNode } from 'react';
-import type { Session } from '@supabase/supabase-js';
-import { AuthContext, type AuthContextValue, type AuthResult, type WelcomeState } from '@/context/AuthContext';
-import { supabase } from '@/lib/supabase';
-import { isCandidateProfile, type CandidateProfile, type ProfileDraft, type ProfileEditDraft } from '@/lib/profile';
+import { useState, useEffect, useMemo, useCallback, type ReactNode } from 'react';
+import { AuthContext, type AuthContextValue, type AuthResult, type WelcomeState, type DemoSession, type DemoUser } from '@/context/AuthContext';
+import { isCandidateProfile, validateProfileDraft, type CandidateProfile, type ProfileDraft, type ProfileEditDraft } from '@/lib/profile';
 
-const SERVICE_UNAVAILABLE = 'The account service is not available right now. Please try again shortly.';
-const GENERIC_ERROR = 'Something went wrong. Please try again.';
-const PROFILE_LOAD_ERROR = 'We could not load your profile. Please try again.';
-const PROFILE_SAVE_ERROR = 'We could not save your profile. Please check your details and try again.';
-const PROFILE_COLUMNS = 'first_name, last_name, date_of_birth, email, phone, address, gender, highest_education, career_interests, skills, career_goals';
-
-type Credentials = { email: string; password: string } | { phone: string; password: string };
-
-function toCredentials(identifier: string, password: string): Credentials {
-  const trimmed = identifier.trim();
-  if (trimmed.includes('@')) return { email: trimmed, password };
-  return { phone: `+${trimmed.replace(/[^0-9]/g, '')}`, password };
+const USERS_KEY = 'restarther_demo_users_v1';
+const PROFILES_KEY = 'restarther_demo_profiles_v1';
+const SESSION_KEY = 'restarther_demo_session_v1';
+type StoredUser = { id: string; identifier: string; email?: string; phone?: string; salt: string; passwordHash: string };
+type StoredProfiles = Record<string, CandidateProfile>;
+function readJson<T>(key: string, fallback: T): T {
+ try { const value = localStorage.getItem(key); return value ? JSON.parse(value) as T : fallback; } catch { return fallback; }
 }
-
-function describeError(message: string): string {
-  const lower = message.toLowerCase();
-  if (lower.includes('already registered') || lower.includes('already been registered') || lower.includes('already exists')) {
-    return 'An account with these details already exists. Try signing in instead.';
-  }
-  if (lower.includes('invalid login credentials')) return 'Those details do not match our records.';
-  if (lower.includes('password')) return 'Please choose a stronger password with at least 8 characters.';
-  if (lower.includes('phone')) return 'Please check the phone number and try again.';
-  if (lower.includes('fetch') || lower.includes('network')) {
-    return 'We could not reach the account service. Check your connection and try again.';
-  }
-  return GENERIC_ERROR;
+function bytesToBase64(bytes: Uint8Array): string {
+ let binary = ''; bytes.forEach((byte) => { binary += String.fromCharCode(byte); }); return btoa(binary);
 }
-
-async function loadProfile(userId: string): Promise<{ profile: CandidateProfile | null; error: string | null }> {
-  if (!supabase) return { profile: null, error: SERVICE_UNAVAILABLE };
-  const { data, error } = await supabase
-    .from('candidate_profiles')
-    .select(PROFILE_COLUMNS)
-    .eq('user_id', userId)
-    .maybeSingle();
-  if (error) return { profile: null, error: PROFILE_LOAD_ERROR };
-  if (data !== null && !isCandidateProfile(data)) return { profile: null, error: PROFILE_LOAD_ERROR };
-  if (!data) return { profile: null, error: null };
-  return {
-    profile: {
-      ...data,
-      career_interests: typeof data.career_interests === 'string' ? data.career_interests : '',
-      skills: typeof data.skills === 'string' ? data.skills : '',
-      career_goals: typeof data.career_goals === 'string' ? data.career_goals : '',
-    },
-    error: null,
-  };
+function base64ToBytes(value: string): Uint8Array { return Uint8Array.from(atob(value), (c) => c.charCodeAt(0)); }
+async function hashPassword(password: string, salt: Uint8Array): Promise<string> {
+ const material = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+ const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: 120000, hash: 'SHA-256' }, material, 256);
+ return bytesToBase64(new Uint8Array(bits));
 }
+function toDemoUser(user: StoredUser): DemoUser { return user.email ? { id: user.id, email: user.email } : { id: user.id, phone: user.phone }; }
+function makeSession(user: StoredUser): DemoSession { return { user: toDemoUser(user) }; }
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<CandidateProfile | null>(null);
-  const [profileError, setProfileError] = useState<string | null>(null);
-  const [welcome, setWelcome] = useState<WelcomeState | null>(null);
-  const flowRef = useRef(false);
+ const [session, setSession] = useState<DemoSession | null>(null);
+ const [loading, setLoading] = useState(true);
+ const [profile, setProfile] = useState<CandidateProfile | null>(null);
+ const [profileError, setProfileError] = useState<string | null>(null);
+ const [welcome, setWelcome] = useState<WelcomeState | null>(null);
 
-  useEffect(() => {
-    if (!supabase) {
-      setLoading(false);
-      return;
-    }
-    let active = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (!active) return;
-      (async () => {
-        if (data.session) {
-          const result = await loadProfile(data.session.user.id);
-          if (!active) return;
-          setProfile(result.profile);
-          setProfileError(result.error);
-        }
-        if (!active) return;
-        setSession(data.session);
-        setLoading(false);
-      })();
-    });
-    const { data } = supabase.auth.onAuthStateChange((_event, next) => {
-      if (flowRef.current) return;
-      setSession(next);
-      if (!next) {
-        setProfile(null);
-        setProfileError(null);
-        setWelcome(null);
-      }
-    });
-    return () => {
-      active = false;
-      data.subscription.unsubscribe();
-    };
-  }, []);
+ useEffect(() => {
+  const id = localStorage.getItem(SESSION_KEY);
+  if (id) {
+   const user = readJson<StoredUser[]>(USERS_KEY, []).find((item) => item.id === id);
+   if (user) {
+    setSession(makeSession(user));
+    const saved = readJson<StoredProfiles>(PROFILES_KEY, {})[id];
+    if (saved && isCandidateProfile(saved)) setProfile(saved);
+   } else localStorage.removeItem(SESSION_KEY);
+  }
+  setLoading(false);
+ }, []);
 
-  const signUp = useCallback(async (identifier: string, password: string): Promise<AuthResult> => {
-    if (!supabase) return { error: SERVICE_UNAVAILABLE, needsSignIn: false };
-    flowRef.current = true;
-    try {
-      const { data, error } = await supabase.auth.signUp(toCredentials(identifier, password));
-      if (error) return { error: describeError(error.message), needsSignIn: false };
-      if (data.session) {
-        setProfile(null);
-        setProfileError(null);
-        setSession(data.session);
-        return { error: null, needsSignIn: false };
-      }
-      return { error: null, needsSignIn: true };
-    } finally {
-      flowRef.current = false;
-    }
-  }, []);
+ const signUp = useCallback(async (identifier: string, password: string): Promise<AuthResult> => {
+  const clean = identifier.trim().toLowerCase();
+  if (!clean || password.length < 8) return { error: 'Enter a valid email/phone and a password with at least 8 characters.', needsSignIn: false };
+  const users = readJson<StoredUser[]>(USERS_KEY, []);
+  if (users.some((item) => item.identifier === clean)) return { error: 'An account with these details already exists. Try signing in instead.', needsSignIn: false };
+  try {
+   const salt = crypto.getRandomValues(new Uint8Array(16));
+   const user: StoredUser = { id: crypto.randomUUID(), identifier: clean, ...(clean.includes('@') ? { email: clean } : { phone: clean }), salt: bytesToBase64(salt), passwordHash: await hashPassword(password, salt) };
+   localStorage.setItem(USERS_KEY, JSON.stringify([...users, user]));
+   localStorage.setItem(SESSION_KEY, user.id);
+   setSession(makeSession(user)); setProfile(null); setProfileError(null);
+   return { error: null, needsSignIn: false };
+  } catch { return { error: 'Demo sign-up needs a modern browser with HTTPS enabled.', needsSignIn: false }; }
+ }, []);
 
-  const signIn = useCallback(async (identifier: string, password: string): Promise<AuthResult> => {
-    if (!supabase) return { error: SERVICE_UNAVAILABLE, needsSignIn: false };
-    flowRef.current = true;
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword(toCredentials(identifier, password));
-      if (error) return { error: describeError(error.message), needsSignIn: false };
-      if (!data.session) return { error: GENERIC_ERROR, needsSignIn: false };
-      const result = await loadProfile(data.session.user.id);
-      if (result.error) {
-        await supabase.auth.signOut();
-        return { error: result.error, needsSignIn: false };
-      }
-      setProfile(result.profile);
-      setProfileError(null);
-      setWelcome(result.profile ? { name: result.profile.first_name, returning: true } : null);
-      setSession(data.session);
-      return { error: null, needsSignIn: false };
-    } finally {
-      flowRef.current = false;
-    }
-  }, []);
+ const signIn = useCallback(async (identifier: string, password: string): Promise<AuthResult> => {
+  const clean = identifier.trim().toLowerCase();
+  const user = readJson<StoredUser[]>(USERS_KEY, []).find((item) => item.identifier === clean);
+  if (!user) return { error: 'No matching demo account exists in this browser. Please create an account first.', needsSignIn: false };
+  try {
+   if (await hashPassword(password, base64ToBytes(user.salt)) !== user.passwordHash) return { error: 'Those details do not match our records.', needsSignIn: false };
+   localStorage.setItem(SESSION_KEY, user.id);
+   const saved = readJson<StoredProfiles>(PROFILES_KEY, {})[user.id] ?? null;
+   setProfile(saved && isCandidateProfile(saved) ? saved : null); setProfileError(null);
+   setWelcome(saved ? { name: saved.first_name, returning: true } : null);
+   setSession(makeSession(user));
+   return { error: null, needsSignIn: false };
+  } catch { return { error: 'Sign-in is unavailable in this browser. Please try again.', needsSignIn: false }; }
+ }, []);
 
-  const signOut = useCallback(async (): Promise<string | null> => {
-    if (!supabase) return SERVICE_UNAVAILABLE;
-    const { error } = await supabase.auth.signOut();
-    if (error) return describeError(error.message);
-    setProfile(null);
-    setProfileError(null);
-    setWelcome(null);
-    return null;
-  }, []);
+ const signOut = useCallback(async (): Promise<string | null> => {
+  localStorage.removeItem(SESSION_KEY); setSession(null); setProfile(null); setProfileError(null); setWelcome(null); return null;
+ }, []);
 
-  const saveProfile = useCallback(
-    async (draft: ProfileDraft): Promise<string | null> => {
-      if (!supabase || !session) return SERVICE_UNAVAILABLE;
-      if (!draft.highest_education) return 'Please choose your highest education.';
-      const saved: CandidateProfile = {
-        first_name: draft.first_name.trim(),
-        last_name: draft.last_name.trim(),
-        date_of_birth: draft.date_of_birth,
-        email: draft.email.trim(),
-        phone: draft.phone.trim(),
-        address: draft.address.trim(),
-        gender: 'Female',
-        highest_education: draft.highest_education,
-        career_interests: '',
-        skills: '',
-        career_goals: '',
-      };
-      const { error } = await supabase.from('candidate_profiles').upsert(
-        { ...saved, user_id: session.user.id },
-        { onConflict: 'user_id' },
-      );
-      if (error) return PROFILE_SAVE_ERROR;
-      setProfile(saved);
-      setProfileError(null);
-      setWelcome({ name: saved.first_name, returning: false });
-      return null;
-    },
-    [session],
-  );
+ const saveProfile = useCallback(async (draft: ProfileDraft): Promise<string | null> => {
+  if (!session) return 'Please sign in again.';
+  const problem = validateProfileDraft(draft); if (problem) return problem;
+  const saved: CandidateProfile = {
+   first_name: draft.first_name.trim(), last_name: draft.last_name.trim(), date_of_birth: draft.date_of_birth,
+   email: draft.email.trim(), phone: draft.phone.trim(), address: draft.address.trim(), gender: 'Female',
+   highest_education: draft.highest_education as CandidateProfile['highest_education'],
+   career_interests: '', skills: '', career_goals: '',
+  };
+  const profiles = readJson<StoredProfiles>(PROFILES_KEY, {}); profiles[session.user.id] = saved;
+  localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles)); setProfile(saved); setProfileError(null);
+  setWelcome({ name: saved.first_name, returning: false }); return null;
+ }, [session]);
 
-  const updateProfile = useCallback(async (draft: ProfileEditDraft): Promise<string | null> => {
-    if (!supabase || !session) return SERVICE_UNAVAILABLE;
-    const updates = {
-      first_name: draft.first_name.trim(),
-      last_name: draft.last_name.trim(),
-      date_of_birth: draft.date_of_birth,
-      email: draft.email.trim(),
-      phone: draft.phone.trim(),
-      address: draft.address.trim(),
-      highest_education: draft.highest_education,
-      career_interests: draft.career_interests.trim(),
-      skills: draft.skills.trim(),
-      career_goals: draft.career_goals.trim(),
-    };
-    const { data, error } = await supabase
-      .from('candidate_profiles')
-      .update(updates)
-      .eq('user_id', session.user.id)
-      .select(PROFILE_COLUMNS)
-      .maybeSingle();
-    if (error || !data || !isCandidateProfile(data)) return PROFILE_SAVE_ERROR;
-    setProfile({
-      ...data,
-      career_interests: typeof data.career_interests === 'string' ? data.career_interests : '',
-      skills: typeof data.skills === 'string' ? data.skills : '',
-      career_goals: typeof data.career_goals === 'string' ? data.career_goals : '',
-    });
-    return null;
-  }, [session]);
+ const updateProfile = useCallback(async (draft: ProfileEditDraft): Promise<string | null> => {
+  if (!session) return 'Please sign in again.';
+  const profiles = readJson<StoredProfiles>(PROFILES_KEY, {}); const current = profiles[session.user.id];
+  if (!current) return 'We could not find your profile. Please complete it again.';
+  const updated: CandidateProfile = { ...current, first_name: draft.first_name.trim(), last_name: draft.last_name.trim(),
+   date_of_birth: draft.date_of_birth, email: draft.email.trim(), phone: draft.phone.trim(), address: draft.address.trim(),
+   highest_education: draft.highest_education as CandidateProfile['highest_education'],
+   career_interests: draft.career_interests.trim(), skills: draft.skills.trim(), career_goals: draft.career_goals.trim() };
+  profiles[session.user.id] = updated; localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles)); setProfile(updated); return null;
+ }, [session]);
 
-  const dismissWelcome = useCallback(() => setWelcome(null), []);
-
-  const value = useMemo<AuthContextValue>(
-    () => ({
-      session,
-      user: session?.user ?? null,
-      loading,
-      profile,
-      profileError,
-      welcome,
-      dismissWelcome,
-      signUp,
-      signIn,
-      signOut,
-      saveProfile,
-      updateProfile,
-    }),
-    [session, loading, profile, profileError, welcome, dismissWelcome, signUp, signIn, signOut, saveProfile, updateProfile],
-  );
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+ const dismissWelcome = useCallback(() => setWelcome(null), []);
+ const value = useMemo<AuthContextValue>(() => ({ session, user: session?.user ?? null, loading, profile, profileError, welcome, dismissWelcome, signUp, signIn, signOut, saveProfile, updateProfile }),
+  [session, loading, profile, profileError, welcome, dismissWelcome, signUp, signIn, signOut, saveProfile, updateProfile]);
+ return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
