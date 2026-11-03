@@ -1,8 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BadgeCheck, BriefcaseBusiness, Check, MessageCircleHeart, Sparkles, UsersRound, X } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
 import { buttonClass } from '@/components/ui/buttonClass';
 import { cn } from '@/lib/cn';
+import { useAuth } from '@/hooks/useAuth';
+import { loadCareerRoadmap } from '@/lib/journey';
 
 type Mentor = {
   id: string;
@@ -33,6 +35,7 @@ const PLANS = [
 ];
 
 export default function MentorshipPage() {
+  const { user } = useAuth();
   const [interest, setInterest] = useState('All interests');
   const [activeMentor, setActiveMentor] = useState<Mentor | null>(null);
   const [chosenMentor, setChosenMentor] = useState(() => {
@@ -40,6 +43,18 @@ export default function MentorshipPage() {
   });
   const [confirmation, setConfirmation] = useState('');
   const [planInterest, setPlanInterest] = useState('');
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const roadmap = loadCareerRoadmap(user.id);
+    const interestsText = [roadmap?.assessment?.targetRole, roadmap?.assessment?.previousRole, roadmap?.assessment?.learningNeeds]
+      .filter(Boolean).join(' ').toLowerCase();
+    const matched = FILTERS.slice(1).find((filter) => {
+      const terms = filter.toLowerCase().split(/[^a-z]+/).filter((term) => term.length > 3);
+      return terms.some((term) => interestsText.includes(term));
+    });
+    if (matched) setInterest(matched);
+  }, [user?.id]);
 
   const filtered = useMemo(() => interest === 'All interests' ? MENTORS : MENTORS.filter((mentor) => mentor.interests.includes(interest)), [interest]);
 
