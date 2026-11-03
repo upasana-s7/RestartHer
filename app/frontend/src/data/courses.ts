@@ -81,7 +81,7 @@ export const COURSES: Course[] = [
     skills: ['Data analytics', 'Data visualisation', 'Data storytelling'], level: 'Beginner',
     duration: 'Self-paced; check provider', cost: 'Free', hasCertificate: true,
     certificateNote: 'Check Cisco Skills for All for current course availability and digital-badge conditions.',
-    summary: 'Explore Cisco's entry-level data analytics learning and practical data skills.',
+    summary: 'Explore Cisco\'s entry-level data analytics learning and practical data skills.',
   },
   {
     id: 'google-data-analytics', title: 'Google Data Analytics Certificate', provider: 'Google Career Certificates',
@@ -89,7 +89,7 @@ export const COURSES: Course[] = [
     skills: ['Data analysis', 'Spreadsheets', 'SQL', 'Visualisation', 'R'], level: 'Beginner',
     duration: 'Self-paced; provider estimate varies', cost: 'Paid', hasCertificate: true,
     certificateNote: 'Professional certificate subscription or fees may apply; check Google for current pricing.',
-    summary: 'Build job-relevant data analytics foundations through Google's professional certificate programme.',
+    summary: 'Build job-relevant data analytics foundations through Google\'s professional certificate programme.',
   },
   {
     id: 'microsoft-powerbi', title: 'Power BI Learning Paths', provider: 'Microsoft Learn',
@@ -97,7 +97,7 @@ export const COURSES: Course[] = [
     skills: ['Power BI', 'Data modelling', 'Dashboards', 'Data visualisation'], level: 'Beginner',
     duration: 'Self-paced modules', cost: 'Free', hasCertificate: false,
     certificateNote: 'Learning modules are free; separate Microsoft certification exams may cost extra.',
-    summary: 'Learn to connect, model and visualise data with Power BI using Microsoft's official training.',
+    summary: 'Learn to connect, model and visualise data with Power BI using Microsoft\'s official training.',
   },
   {
     id: 'microsoft-python', title: 'Python for Beginners', provider: 'Microsoft Learn',
@@ -105,14 +105,14 @@ export const COURSES: Course[] = [
     skills: ['Python', 'Programming fundamentals', 'Problem solving'], level: 'Beginner',
     duration: 'Self-paced learning path', cost: 'Free', hasCertificate: false,
     certificateNote: 'Free learning path; no separate certification is implied.',
-    summary: 'Refresh programming fundamentals with Microsoft's beginner-friendly Python learning path.',
+    summary: 'Refresh programming fundamentals with Microsoft\'s beginner-friendly Python learning path.',
   },
   {
     id: 'google-ai', title: 'Google AI Learning Resources', provider: 'Google', providerUrl: 'https://ai.google/education/',
     category: 'Artificial Intelligence', skills: ['AI fundamentals', 'Generative AI', 'Machine learning'], level: 'Beginner',
     duration: 'Varies by resource', cost: 'Free', hasCertificate: false,
     certificateNote: 'Learning resources vary; check each item for any credential.',
-    summary: 'Explore Google's educational resources for AI and machine learning fundamentals.',
+    summary: 'Explore Google\'s educational resources for AI and machine learning fundamentals.',
   },
   {
     id: 'aws-cloud', title: 'AWS Cloud Practitioner Essentials', provider: 'AWS Skill Builder',
@@ -128,7 +128,7 @@ export const COURSES: Course[] = [
     skills: ['SQL', 'Databases', 'Querying', 'Data management'], level: 'Beginner',
     duration: 'Varies by resource', cost: 'Free', hasCertificate: false,
     certificateNote: 'Free learning resources do not automatically include a certification.',
-    summary: 'Refresh SQL and database foundations with Oracle's official learning resources.',
+    summary: 'Refresh SQL and database foundations with Oracle\'s official learning resources.',
   },
 ];
 
