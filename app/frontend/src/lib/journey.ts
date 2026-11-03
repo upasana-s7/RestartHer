@@ -27,17 +27,52 @@ export interface CareerRoadmap {
   confirmedAt?: string;
   assessment?: CareerAssessment;
 }
-export const ASSESSMENT_QUESTIONS: Array<{ key: keyof CareerAssessment; label: string; hint: string; options?: string[] }> = [
-  { key: 'goal', label: 'What would you like your next career chapter to look like?', hint: 'Describe the kind of work or change you hope to make.' },
-  { key: 'targetRole', label: 'Which role or career area interests you most?', hint: 'It is okay if you are still exploring.' },
-  { key: 'experience', label: 'What best describes your previous work or learning experience?', hint: 'Include career breaks, education, volunteering or projects.' },
-  { key: 'existingSkills', label: 'What skills or strengths do you already bring?', hint: 'List tools, subject knowledge, communication or people skills.' },
-  { key: 'weeklyTime', label: 'How much time can you realistically set aside each week?', hint: 'Choose a pace that fits your life.', options: ['1–3 hours', '4–6 hours', '7–10 hours', '11+ hours'] },
-  { key: 'learningPreference', label: 'How do you prefer to learn?', hint: 'Pick what feels most comfortable.', options: ['Short videos and guided lessons', 'Reading and self-paced courses', 'Hands-on projects and practice', 'A mix of these'] },
-  { key: 'biggestBarrier', label: 'What is the biggest thing making it difficult to restart?', hint: 'For example: confidence, time, knowing where to begin, or updating skills.' },
+export const ASSESSMENT_QUESTIONS: Array<{ key: keyof CareerAssessment; label: string; hint: string; options: string[] }> = [
+  {
+    key: 'experience',
+    label: 'Where are you right now?',
+    hint: 'Choose the option that best describes your current stage.',
+    options: ['Student or recent graduate', 'Currently working', 'Taking a career break', 'Returning after a long break', 'Exploring my first career', 'Changing career direction'],
+  },
+  {
+    key: 'targetRole',
+    label: 'Which career area interests you?',
+    hint: 'It is okay if you are still exploring.',
+    options: ['Technology and IT', 'Data and analytics', 'AI and machine learning', 'Design and creative work', 'Business and management', 'Marketing and communication', 'Finance', 'Not sure yet'],
+  },
+  {
+    key: 'existingSkills',
+    label: 'What best describes the skills you already have?',
+    hint: 'Think about studies, work, projects and everyday strengths.',
+    options: ['I am starting from scratch', 'Basic computer and digital skills', 'Some technical or subject knowledge', 'I have completed projects or practical work', 'Strong communication or people skills', 'A mix of these'],
+  },
+  {
+    key: 'goal',
+    label: 'What would you most like to improve?',
+    hint: 'Choose the skill area you want your roadmap to focus on.',
+    options: ['Technical or job-specific skills', 'Communication and presentation', 'Confidence and interview skills', 'Practical projects and experience', 'A balanced mix of skills'],
+  },
+  {
+    key: 'learningPreference',
+    label: 'How do you feel about communication and confidence?',
+    hint: 'This helps us make your plan supportive, not overwhelming.',
+    options: ['I feel comfortable sharing my ideas', 'I am somewhat confident but want to improve', 'I lack confidence and want guided practice', 'I want to improve both communication and confidence'],
+  },
+  {
+    key: 'weeklyTime',
+    label: 'How much time can you set aside each week?',
+    hint: 'Choose a realistic pace.',
+    options: ['1–3 hours', '4–6 hours', '7–10 hours', '11+ hours'],
+  },
+  {
+    key: 'biggestBarrier',
+    label: 'What is your biggest challenge right now?',
+    hint: 'Pick the one that affects you most.',
+    options: ['I do not know where to start', 'Lack of confidence', 'Limited time or other responsibilities', 'I need to update my skills', 'I need practical experience', 'I feel overwhelmed or inconsistent'],
+  },
 ];
 export function emptyAssessment(): CareerAssessment {
-  return { goal: '', targetRole: '', experience: '', existingSkills: '', weeklyTime: '4–6 hours', learningPreference: 'A mix of these', biggestBarrier: '' };
+  return { goal: '', targetRole: '', experience: '', existingSkills: '', weeklyTime: '4–6 hours', learningPreference: '', biggestBarrier: '' };
 }
 export function loadCareerRoadmap(userId: string): CareerRoadmap | null {
   try {
@@ -49,20 +84,20 @@ export function saveCareerRoadmap(userId: string, roadmap: CareerRoadmap): void 
   localStorage.setItem('restarther_roadmap_v1_' + userId, JSON.stringify(roadmap));
 }
 export async function generateCareerRoadmap(answers: CareerAssessment, revision = ''): Promise<CareerRoadmap> {
-  const catalogue = COURSES.map((course) => ({ id: course.id, title: course.title, provider: course.provider, skills: course.skills, level: course.level, duration: course.duration }));
+  const catalogue = COURSES.map((course) => ({ id: course.id, title: course.title, skills: course.skills, level: course.level }));
   const prompt = [
-    'Create a practical, supportive career comeback learning roadmap from this seven-question assessment.',
-    'Return ONLY valid JSON, no markdown fences, matching this shape:',
-    '{"title":"short title","targetRole":"target role","overview":"2-3 personalised sentences","durationWeeks":4,"weeklyPlan":[{"week":1,"focus":"focus","topics":["topic"],"tasks":["specific task"],"milestone":"observable deliverable","courseIds":["valid catalogue id"]}]}',
-    'Create 4 to 6 weeks. Every week needs 2-4 specific tasks, a concrete milestone, and only courseIds from the supplied catalogue. Use an empty courseIds array if none fit. Match the user available weekly time. Start with foundations, then practice, then a small portfolio-ready outcome. Do not invent courses, certificates, jobs, or guarantees.',
-    'ASSESSMENT: ' + JSON.stringify(answers),
-    'AVAILABLE COURSE CATALOGUE: ' + JSON.stringify(catalogue),
-    revision ? 'REQUESTED CHANGE: ' + revision + '. Revise the plan to honour this while preserving useful parts.' : '',
+    'Build a concise, personalised learning roadmap using this short career check-in.',
+    'Return ONLY valid JSON with this exact shape:',
+    '{"title":"short title","targetRole":"career area","overview":"two short personalised sentences","durationWeeks":4,"weeklyPlan":[{"week":1,"focus":"focus","topics":["topic"],"tasks":["specific task","specific task"],"milestone":"observable result","courseIds":["valid catalogue id"]}]}',
+    'Create exactly 4 practical weeks. Each week needs 1-2 topics, 2 specific achievable tasks, one observable milestone, and only courseIds from the supplied catalogue (use [] when none fit). Keep the plan beginner-friendly and realistic for the weekly time selected. Include the chosen skill-development goal and support communication/confidence needs when relevant. Do not invent courses, certificates, jobs, or guarantees. Keep wording concise.',
+    'CAREER CHECK-IN: ' + JSON.stringify(answers),
+    'AVAILABLE COURSES: ' + JSON.stringify(catalogue),
+    revision ? 'REQUESTED CHANGE: ' + revision + '. Apply it while keeping the plan concise.' : '',
   ].filter(Boolean).join('\n');
   const raw = await sendCompanionMessage(prompt, [], 'roadmap');
   const start = raw.indexOf('{');
   const end = raw.lastIndexOf('}');
-  if (start < 0 || end <= start) throw new Error('The AI response was not a usable roadmap. Please try generating it again.');
+  if (start < 0 || end <= start) throw new Error('The AI response was not a usable roadmap. Please try again.');
   let parsed: unknown;
   try { parsed = JSON.parse(raw.slice(start, end + 1)); }
   catch { throw new Error('The roadmap could not be formatted correctly. Please try again.'); }
@@ -71,11 +106,11 @@ export async function generateCareerRoadmap(answers: CareerAssessment, revision 
     throw new Error('The AI returned an incomplete roadmap. Please generate it again.');
   }
   const validIds = new Set(COURSES.map((course) => course.id));
-  const weeklyPlan = value.weeklyPlan.map((week, index) => ({
+  const weeklyPlan = value.weeklyPlan.slice(0, 4).map((week, index) => ({
     week: Number(week.week) || index + 1,
     focus: String(week.focus || 'Week ' + (index + 1)),
-    topics: Array.isArray(week.topics) ? week.topics.map(String) : [],
-    tasks: Array.isArray(week.tasks) ? week.tasks.map(String) : [],
+    topics: Array.isArray(week.topics) ? week.topics.slice(0, 3).map(String) : [],
+    tasks: Array.isArray(week.tasks) ? week.tasks.slice(0, 3).map(String) : [],
     milestone: String(week.milestone || 'Review what you have learned'),
     courseIds: Array.isArray(week.courseIds) ? week.courseIds.filter((id): id is string => typeof id === 'string' && validIds.has(id)) : [],
   }));
