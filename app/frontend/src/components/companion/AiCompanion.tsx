@@ -29,7 +29,7 @@ export default function AiCompanion({ open, onClose }: AiCompanionProps) {
   };
   return (
     <section id="ai-companion" aria-label="RestartHER AI companion" aria-hidden={!open}
-      className={'fixed left-6 top-36 z-50 flex max-h-[250px] w-60 flex-col overflow-hidden rounded-xl border border-burgundy/20 bg-cream-light shadow-panel transition-all duration-300 ease-out ' + (open ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-2 opacity-0')}>
+      className={'fixed bottom-28 left-6 z-50 flex max-h-[min(320px,calc(100vh-10rem))] w-60 flex-col overflow-hidden rounded-xl border border-burgundy/20 bg-cream-light shadow-panel transition-all duration-300 ease-out ' + (open ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-2 opacity-0')}>
       <header className="flex items-center justify-between gap-3 border-b border-burgundy/15 bg-burgundy px-3 py-2 text-cream">
         <div className="flex items-center gap-3"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-cream/15"><Sparkles className="h-4 w-4" aria-hidden="true" /></span><div><p className="font-label text-xs font-semibold">RestartHER AI</p><p className="text-[0.6rem] text-cream/80">Powered by Gemini</p></div></div>
         <button type="button" onClick={onClose} aria-label="Minimise AI companion" className="rounded-full p-2 transition-colors hover:bg-cream/15"><Minus className="h-4 w-4" /></button>
