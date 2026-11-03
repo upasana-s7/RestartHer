@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 const INTRO_DURATION_MS = 5000;
-const SPLASH_ARTWORK = '/restart-her-splash.svg';
+const SPLASH_ARTWORK = 'https://raw.githubusercontent.com/upasana-s7/BoltFrontend/main/RestartHER__Your_Next_Chapter_Awaits_(1)%20copy.png';
 
 interface IntroScreenProps {
   onComplete: () => void;
@@ -20,7 +20,7 @@ export default function IntroScreen({ onComplete }: IntroScreenProps) {
     >
       <img
         src={SPLASH_ARTWORK}
-        alt="RestartHER illustrated woman with gently moving hair and flowing dress, holding a book"
+        alt="RestartHER: Her career paused. Her potential never did."
         className="intro-splash-art absolute inset-0 h-full w-full object-cover object-center"
       />
       <div className="intro-splash-vignette absolute inset-0" aria-hidden="true" />
