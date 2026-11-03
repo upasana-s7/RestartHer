@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import type { Section } from '@/hooks/useSectionRoute';
 import { ARTICLES, TESTIMONIALS } from '@/data/editorial';
 import type { Article, Testimonial } from '@/types/content';
@@ -20,8 +21,24 @@ interface EditionPageProps {
 }
 
 export default function EditionPage({ onNavigate }: EditionPageProps) {
+  const { user } = useAuth();
+  const userId = user?.id ?? '';
+  const [savedArticles, setSavedArticles] = useState<Set<string>>(new Set());
   const [activeArticle, setActiveArticle] = useState<Article | null>(null);
   const [activeTestimonial, setActiveTestimonial] = useState<Testimonial | null>(null);
+
+  useEffect(() => {
+    if (!userId) return;
+    try { setSavedArticles(new Set(JSON.parse(localStorage.getItem('restarther_saved_stories_v1_' + userId) || '[]') as string[])); }
+    catch { setSavedArticles(new Set()); }
+  }, [userId]);
+
+  const toggleSavedStory = (articleId: string) => setSavedArticles((current) => {
+    const next = new Set(current);
+    if (next.has(articleId)) next.delete(articleId); else next.add(articleId);
+    if (userId) localStorage.setItem('restarther_saved_stories_v1_' + userId, JSON.stringify(Array.from(next)));
+    return next;
+  });
 
   return (
     <div>
