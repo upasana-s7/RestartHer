@@ -839,6 +839,79 @@ export default class RestartHERService extends cds.ApplicationService {
 
 
 
+        // FEATURE 6: GEMINI-POWERED AI COMPANION
+        this.on('chatWithCompanion', async (req) => {
+            const message = typeof req.data.message === 'string' ? req.data.message.trim() : '';
+
+            if (!message) {
+                return req.reject(400, 'Please enter a message.');
+            }
+            if (message.length > 4000) {
+                return req.reject(400, 'Please keep messages under 4,000 characters.');
+            }
+
+            const apiKey = process.env.GEMINI_API_KEY;
+            if (!apiKey) {
+                return req.reject(503, 'The AI companion is not configured yet. Add GEMINI_API_KEY to the backend environment.');
+            }
+
+            const model = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
+            const systemInstruction = [
+                'You are RestartHER, a warm, practical career-reentry companion.',
+                'Help people returning to work after a career break with skills, learning plans, confidence, interviews and career planning.',
+                'Be respectful, inclusive, encouraging and realistic. Do not shame people for career gaps.',
+                'Do not invent current job openings, course availability, salaries, deadlines or provider facts. Explain when something needs verification.',
+                'Ask at most one focused follow-up question when needed. Keep replies clear and reasonably concise.',
+                'Do not claim to access or change the user account, profile, roadmap or database.'
+            ].join(' ');
+
+            let response;
+            try {
+                response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-goog-api-key': apiKey
+                        },
+                        body: JSON.stringify({
+                            systemInstruction: { parts: [{ text: systemInstruction }] },
+                            contents: [{ role: 'user', parts: [{ text: message }] }],
+                            generationConfig: { maxOutputTokens: 600 }
+                        }),
+                        signal: AbortSignal.timeout(30000)
+                    }
+                );
+            } catch (error) {
+                console.error('Gemini request failed:', error?.name || 'network error');
+                return req.reject(502, 'The AI companion could not be reached. Please try again.');
+            }
+
+            if (!response.ok) {
+                console.error('Gemini API returned status:', response.status);
+                return req.reject(502, 'The AI companion service returned an error. Please try again later.');
+            }
+
+            let payload;
+            try {
+                payload = await response.json();
+            } catch {
+                return req.reject(502, 'The AI companion returned an unreadable response.');
+            }
+
+            const reply = payload?.candidates?.[0]?.content?.parts
+                ?.map((part) => typeof part.text === 'string' ? part.text : '')
+                .join('')
+                .trim();
+
+            if (!reply) {
+                return req.reject(502, 'The AI companion could not generate a reply. Please rephrase your message.');
+            }
+
+            return { reply };
+        });
+
         await super.init();
     }
 }
