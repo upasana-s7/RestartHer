@@ -1,5 +1,5 @@
 export interface CompanionReply { reply: string; }
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\\/$/, '');
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
 const COMPANION_ACTION = API_BASE_URL + '/odata/v4/restart-her/chatWithCompanion';
 
 export async function sendCompanionMessage(message: string): Promise<string> {
