@@ -23,6 +23,7 @@ export default function CoursesPage() {
   const [roadmapCourseIds, setRoadmapCourseIds] = useState<string[]>([]);
   useEffect(() => {
     if (!user?.id) return;
+    try { setSaved(new Set(JSON.parse(localStorage.getItem('restarther_saved_courses_v1_' + user.id) || '[]') as string[])); } catch { setSaved(new Set()); }
     const roadmap = loadCareerRoadmap(user.id);
     setRoadmapCourseIds(roadmap?.confirmedAt ? Array.from(new Set([...roadmap.weeklyPlan.flatMap((week) => week.courseIds), ...getRecommendedSapCourseIds(roadmap.assessment)])) : []);
   }, [user?.id]);
@@ -38,6 +39,7 @@ export default function CoursesPage() {
       const next = new Set(current);
       if (next.has(id)) next.delete(id);
       else next.add(id);
+      if (user?.id) localStorage.setItem('restarther_saved_courses_v1_' + user.id, JSON.stringify(Array.from(next)));
       return next;
     });
 
