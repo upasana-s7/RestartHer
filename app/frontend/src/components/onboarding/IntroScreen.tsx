@@ -23,11 +23,6 @@ export default function IntroScreen({ onComplete }: IntroScreenProps) {
         alt="RestartHER: Her career paused. Her potential never did."
         className="intro-splash-art absolute inset-0 h-full w-full object-cover object-center"
       />
-      <div className="intro-splash-vignette absolute inset-0" aria-hidden="true" />
-      <div className="intro-splash-glow absolute inset-y-[-20%] left-[-30%] w-1/2" aria-hidden="true" />
-      <div className="intro-splash-glow intro-splash-glow-right absolute inset-y-[-15%] right-[-30%] w-1/2" aria-hidden="true" />
-      <div className="intro-splash-fabric absolute inset-x-0 bottom-0 h-1/2" aria-hidden="true" />
-      <div className="intro-splash-trail absolute inset-0" aria-hidden="true" />
       <span className="sr-only">Her career paused. Her potential never did.</span>
     </section>
   );
