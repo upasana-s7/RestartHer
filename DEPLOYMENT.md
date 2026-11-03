@@ -1,13 +1,24 @@
-# RestartHER demo deployment
+# RestartHER pitch prototype
 
-## Public frontend deployment
+## Public deployment
 
-Import `upasana-s7/RestartHer` into Vercel and select branch `integration/bolt-react-gemini`. Keep the project root at the repository root. The root `vercel.json` defines the Vite build and output directory. Deploy to receive a public HTTPS URL.
+Import `upasana-s7/RestartHer` into Vercel and select branch `integration/bolt-react-gemini`. Keep the project root at the repository root. The root `vercel.json` contains the frontend build/output settings and SPA rewrite. Deploy to receive a public HTTPS URL.
 
-This branch uses browser-local demo accounts and profiles; no Supabase project is required. Each browser stores its own demo accounts and profile. Accounts do not sync between browsers/devices, and clearing browser storage removes them. This is a pitch prototype, not production authentication or shared cloud storage. Do not enter real sensitive personal information.
+## Demo accounts and profiles
 
-## AI companion
+This branch uses browser-local demo sign-up/sign-in and profile storage. No Supabase project or database setup is needed. Demo accounts work only in the browser where they were created; they do not sync across browsers/devices, and clearing browser storage removes them. This is for a hackathon prototype only, not production authentication. Do not enter real sensitive personal information.
 
-The companion still calls `/odata/v4/restart-her/chatWithCompanion`. A static Vercel frontend deployment does not host the CAP service. To enable Gemini on the public site, deploy the CAP backend separately and set `VITE_API_BASE_URL` to its HTTPS base URL in Vercel's environment variables, then redeploy. Set `GEMINI_API_KEY` only in the backend hosting provider's server-side environment. Never put the Gemini key in a `VITE_*` variable or commit it.
+## Gemini AI companion
 
-Until that backend is deployed, the rest of the frontend can be presented, but Gemini chat will report that the service is unavailable.
+The Vercel serverless endpoint in `api/chat.js` securely calls Gemini from the server. In Vercel, open **Project Settings → Environment Variables** and add:
+
+- `GEMINI_API_KEY`: your Gemini API key (server-side secret; do not add a `VITE_` prefix)
+- `GEMINI_MODEL`: optional; defaults to `gemini-2.5-flash`
+
+Apply the variables to the Production environment and redeploy. The frontend calls `/api/chat` on the same public domain. You do not need to deploy the CAP backend for this Gemini chat route.
+
+If you set `VITE_API_BASE_URL`, the frontend instead uses the existing CAP action `/odata/v4/restart-her/chatWithCompanion`. Leave it blank for the Vercel Gemini function.
+
+## Demo content
+
+Course/opportunity/learning/mentorship content still includes demonstration data; don't describe sample listings as verified live vacancies.
