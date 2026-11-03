@@ -23,7 +23,7 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
   useEffect(() => {
     if (!userId) return;
     const saved = loadCareerRoadmap(userId);
-    if (saved) { setRoadmap(saved); if (saved.assessment) setAnswers(saved.assessment); setConfirmed(Boolean(saved.confirmedAt)); }
+    if (saved) { setRoadmap(saved); if (saved.assessment) setAnswers({ ...emptyAssessment, ...saved.assessment, personalContext: saved.assessment.personalContext ?? '' }); setConfirmed(Boolean(saved.confirmedAt)); }
   }, [userId]);
 
   const updateAnswer = (key: keyof CareerAssessment, value: string) =>
