@@ -82,7 +82,7 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
             <div className="mt-8 border-t border-burgundy/15 pt-7">
               <label htmlFor="personal-context" className={LABEL_CLASS}>Anything else you'd like your AI guide to know? <span className="font-normal normal-case tracking-normal text-muted">(Optional)</span></label>
               <p className="mb-2 text-xs text-muted">Share anything the questions didn't capture — concerns, goals, skills you feel out of practice with, or circumstances you'd like the plan to consider.</p>
-              <textarea id="personal-context" rows={5} maxLength={1500} value={answers.personalContext} onChange={(event) => updateAnswer('personalContext', event.target.value)} placeholder="Tell us in your own words. For example: I worked in software for several years, but I feel out of touch with the tools I used before my break. I'd like to return to data analytics, but I'm unsure where to begin." className={FIELD_CLASS + ' resize-y'} />
+              <textarea id="personal-context" rows={5} maxLength={1500} value={answers.personalContext} onChange={(event) => updateAnswer('personalContext', event.target.value)} placeholder="" className={FIELD_CLASS + ' resize-y'} />
               <p className="mt-1 text-right text-xs text-muted">{answers.personalContext.length}/1500</p>
             </div>
             {error && <p role="alert" className="mt-5 rounded-lg bg-burgundy-soft p-3 text-sm text-burgundy">{error}</p>}
@@ -121,7 +121,7 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
               {!confirmed ? (
                 <>
                   <label htmlFor="roadmap-change" className={LABEL_CLASS + ' mt-8'}>Want AI to change something?</label>
-                  <textarea id="roadmap-change" rows={2} value={changeRequest} onChange={(event) => setChangeRequest(event.target.value)} className={FIELD_CLASS + ' mt-1 resize-y'} placeholder="E.g. make this plan more hands-on." />
+                  <textarea id="roadmap-change" rows={2} value={changeRequest} onChange={(event) => setChangeRequest(event.target.value)} className={FIELD_CLASS + ' mt-1 resize-y'} placeholder="" />
                   {error && <p role="alert" className="mt-4 text-sm text-burgundy">{error}</p>}
                   <div className="mt-6 flex flex-wrap gap-3">
                     <button type="button" disabled={generating} onClick={() => void generate(changeRequest)} className={buttonClass('outline', 'gap-2')}>
