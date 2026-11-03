@@ -11,6 +11,7 @@ import JourneyPage from '@/pages/JourneyPage';
 import LearningPage from '@/pages/LearningPage';
 import OpportunitiesPage from '@/pages/OpportunitiesPage';
 import CoursesPage from '@/pages/CoursesPage';
+import DashboardPage from '@/pages/DashboardPage';
 import MentorshipPage from '@/pages/MentorshipPage';
 
 function RootGate() {
@@ -41,6 +42,7 @@ function RootGate() {
     <>
       <AppShell section={section} onNavigate={setSection}>
         {section === 'home' && <EditionPage onNavigate={setSection} />}
+        {section === 'dashboard' && <DashboardPage />}
         {section === 'journey' && <JourneyPage onNavigate={setSection} />}
         {section === 'learning' && <LearningPage />}
         {section === 'courses' && <CoursesPage />}
