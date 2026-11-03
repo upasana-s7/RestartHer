@@ -42,7 +42,7 @@ export default async function handler(req, res) {
     contents,
     generationConfig: {
       temperature: isRoadmapRequest ? 0.2 : 0.5,
-      maxOutputTokens: isRoadmapRequest ? 1100 : 500,
+      maxOutputTokens: isRoadmapRequest ? 2600 : 500,
       ...(isRoadmapRequest ? { responseMimeType: 'application/json' } : {})
     }
   };
