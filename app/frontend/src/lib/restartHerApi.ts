@@ -4,7 +4,7 @@ const COMPANION_ACTION = API_BASE_URL
   ? API_BASE_URL + '/odata/v4/restart-her/chatWithCompanion'
   : '/api/chat';
 
-export async function sendCompanionMessage(message: string, history: Array<{ role: 'user' | 'assistant'; text: string }> = []): Promise<string> {
+export async function sendCompanionMessage(message: string, history: Array<{ role: 'user' | 'assistant'; text: string }> = [], mode: 'chat' | 'roadmap' = 'chat'): Promise<string> {
   const trimmed = message.trim();
   if (!trimmed) throw new Error('Please enter a message.');
   if (trimmed.length > 4000) throw new Error('Please keep messages under 4,000 characters.');
@@ -13,6 +13,7 @@ export async function sendCompanionMessage(message: string, history: Array<{ rol
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify({
       message: trimmed,
+      mode,
       history: JSON.stringify(history.slice(-10).map((item) => ({ role: item.role === 'assistant' ? 'model' : 'user', text: item.text }))),
     }),
   });
