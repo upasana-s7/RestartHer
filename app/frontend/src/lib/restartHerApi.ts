@@ -8,15 +8,24 @@ export async function sendCompanionMessage(message: string, history: Array<{ rol
   const trimmed = message.trim();
   if (!trimmed) throw new Error('Please enter a message.');
   if (trimmed.length > 4000) throw new Error('Please keep messages under 4,000 characters.');
-  const response = await fetch(COMPANION_ACTION, {
+  let response: Response;
+  try {
+    response = await fetch(COMPANION_ACTION, {
     method: 'POST',
+    signal: AbortSignal.timeout(mode === 'roadmap' ? 45000 : 20000),
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify({
       message: trimmed,
       mode,
       history: JSON.stringify(history.slice(-10).map((item) => ({ role: item.role === 'assistant' ? 'model' : 'user', text: item.text }))),
     }),
-  });
+    });
+  } catch (cause) {
+    if (cause instanceof Error && cause.name === 'TimeoutError') {
+      throw new Error(mode === 'roadmap' ? 'The roadmap is taking longer than expected. Please try again.' : 'The AI is taking too long to respond. Please try again.');
+    }
+    throw new Error('Could not reach the AI service. Please check your connection and try again.');
+  }
   const payload: unknown = await response.json().catch(() => null);
   if (!response.ok) {
     const errorMessage = typeof payload === 'object' && payload !== null && 'error' in payload &&
