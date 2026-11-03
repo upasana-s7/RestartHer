@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Search, BookmarkCheck } from 'lucide-react';
 import { OPPORTUNITIES, OPPORTUNITY_CATEGORIES } from '@/data/opportunities';
 import {
@@ -12,6 +12,8 @@ import OpportunityCard from '@/components/opportunities/OpportunityCard';
 import OpportunityModal from '@/components/opportunities/OpportunityModal';
 import PageHeader from '@/components/ui/PageHeader';
 import { FIELD_CLASS, LABEL_CLASS, chipClass } from '@/components/ui/controls';
+import { useAuth } from '@/hooks/useAuth';
+import { loadCareerRoadmap } from '@/lib/journey';
 
 type Tab = 'jobs';
 
@@ -34,6 +36,20 @@ export default function OpportunitiesPage() {
   const [filters, setFilters] = useState<OpportunityFilters>(DEFAULT_OPPORTUNITY_FILTERS);
   const [saved, setSaved] = useState<Set<string>>(new Set());
   const [openItem, setOpenItem] = useState<Opportunity | null>(null);
+  const { user } = useAuth();
+  const [careerTerms, setCareerTerms] = useState<string[]>([]);
+  useEffect(() => {
+    if (!user?.id) return;
+    const roadmap = loadCareerRoadmap(user.id);
+    if (!roadmap?.confirmedAt) return;
+    const terms = [roadmap.targetRole, ...roadmap.weeklyPlan.flatMap((week) => [week.focus, ...week.topics])]
+      .join(' ').toLowerCase().split(/[^a-z0-9]+/).filter((word) => word.length > 3);
+    setCareerTerms(Array.from(new Set(terms)));
+  }, [user?.id]);
+  const recommendedOpportunities = useMemo(() => OPPORTUNITIES.map((item) => ({
+    item,
+    score: careerTerms.reduce((total, term) => total + ([item.title, item.category, ...item.skills].join(' ').toLowerCase().includes(term) ? 1 : 0), 0),
+  })).filter((entry) => entry.score > 0).sort((a, b) => b.score - a.score).slice(0, 2).map((entry) => entry.item), [careerTerms]);
 
   const results = useMemo(() => filterOpportunities(OPPORTUNITIES, filters, Date.now()), [filters]);
 
@@ -83,6 +99,19 @@ export default function OpportunitiesPage() {
             {saved.size} saved on this device
           </p>
         </div>
+
+        {careerTerms.length > 0 && (
+          <section className="mt-8 rounded-[1.25rem] border border-burgundy/15 bg-white p-6 shadow-card" aria-label="Career-matched opportunities">
+            <p className="editorial-label">Based on your confirmed career direction</p>
+            <h2 className="mt-2 font-display text-2xl font-bold text-ink">Opportunities to explore</h2>
+            <p className="mt-2 text-sm text-ink/70">These are matches from the prototype's sample listings, not verified live vacancies.</p>
+            {recommendedOpportunities.length ? (
+              <div className="mt-5 grid gap-5 md:grid-cols-2">
+                {recommendedOpportunities.map((opportunity) => <OpportunityCard key={opportunity.id} opportunity={opportunity} saved={saved.has(opportunity.id)} onToggleSave={toggleSave} onOpen={setOpenItem} />)}
+              </div>
+            ) : <p className="mt-4 text-sm text-ink/70">We could not find a close match in the sample listings yet. Use the filters below to explore the full catalogue.</p>}
+          </section>
+        )}
 
         <div className="mt-10">
             <div className="flex flex-wrap gap-2" role="group" aria-label="Opportunity type">
