@@ -41,7 +41,7 @@ function RootGate() {
     <>
       <AppShell section={section} onNavigate={setSection}>
         {section === 'home' && <EditionPage onNavigate={setSection} />}
-        {section === 'journey' && <JourneyPage />}
+        {section === 'journey' && <JourneyPage onNavigate={setSection} />}
         {section === 'learning' && <LearningPage />}
         {section === 'courses' && <CoursesPage />}
         {section === 'opportunities' && <OpportunitiesPage />}
