@@ -29,6 +29,7 @@ export default async function handler(req, res) {
   });
   contents.push({ role: 'user', parts: [{ text: message }] });
 
+  const isRoadmapRequest = req.body?.mode === 'roadmap';
   const requestBody = {
     systemInstruction: {
       parts: [{
@@ -36,7 +37,7 @@ export default async function handler(req, res) {
       }]
     },
     contents,
-    generationConfig: { temperature: 0.6, maxOutputTokens: 1800 }
+    generationConfig: { temperature: isRoadmapRequest ? 0.4 : 0.6, maxOutputTokens: isRoadmapRequest ? 1800 : 700 }
   };
 
   try {
