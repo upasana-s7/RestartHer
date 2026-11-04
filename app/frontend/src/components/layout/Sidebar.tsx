@@ -75,7 +75,7 @@ export default function Sidebar({ section, drawerOpen, aiOpen, onNavigate, onTog
           </div>
         </div>
 
-        <nav aria-label="Main" className="mt-8">
+        <nav aria-label="Main" className="mt-8 md:hidden">
           <ul className="space-y-1">
             {NAV_ITEMS.map((item) => (
               <li key={item.id}>
