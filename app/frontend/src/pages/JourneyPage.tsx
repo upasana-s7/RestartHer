@@ -6,7 +6,7 @@ import { buttonClass } from '@/components/ui/buttonClass';
 import { useAuth } from '@/hooks/useAuth';
 import type { Section } from '@/hooks/useSectionRoute';
 import {
-  ASSESSMENT_QUESTIONS, emptyAssessment, generateCareerRoadmap, loadCareerRoadmap,
+  ASSESSMENT_QUESTIONS, emptyAssessment, generateCareerRoadmap, getRoadmapPhases, loadCareerRoadmap,
   saveCareerRoadmap, type CareerAssessment, type CareerRoadmap,
 } from '@/lib/journey';
 
@@ -132,16 +132,11 @@ export default function JourneyPage({ onNavigate }: { onNavigate: (section: Sect
               <p className="mt-2 font-label text-sm font-semibold text-burgundy">Career direction: {roadmap.targetRole} · {roadmap.durationWeeks} weeks</p>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-ink/75">{roadmap.overview}</p>
               <div className="mt-8 space-y-8">
-                {[
-                  { title: 'Phase 1 · Foundations & refresh', from: 0, to: Math.max(1, Math.ceil(roadmap.weeklyPlan.length / 4)) },
-                  { title: 'Phase 2 · Guided practice', from: Math.max(1, Math.ceil(roadmap.weeklyPlan.length / 4)), to: Math.max(2, Math.ceil(roadmap.weeklyPlan.length / 2)) },
-                  { title: 'Phase 3 · Applied skills', from: Math.max(2, Math.ceil(roadmap.weeklyPlan.length / 2)), to: Math.max(3, Math.ceil(roadmap.weeklyPlan.length * 3 / 4)) },
-                  { title: 'Phase 4 · Career readiness', from: Math.max(3, Math.ceil(roadmap.weeklyPlan.length * 3 / 4)), to: roadmap.weeklyPlan.length },
-                ].map((phase, phaseIndex) => {
-                  const phaseWeeks = roadmap.weeklyPlan.slice(phase.from, phase.to);
+                {getRoadmapPhases(roadmap).map((phase, phaseIndex) => {
+                  const phaseWeeks = roadmap.weeklyPlan.filter((week) => phase.weeks.includes(week.week));
                   if (!phaseWeeks.length) return null;
                   return <section key={phase.title}>
-                    <div className="mb-3 flex items-center gap-3"><span className="flex h-8 w-8 items-center justify-center rounded-full bg-burgundy text-xs font-semibold text-cream">{phaseIndex + 1}</span><h3 className="font-display text-xl font-bold text-ink">{phase.title}</h3></div>
+                    <div className="mb-3 flex items-start gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-burgundy text-xs font-semibold text-cream">{phaseIndex + 1}</span><div><h3 className="font-display text-xl font-bold text-ink">{phase.title}</h3><p className="mt-1 text-sm leading-6 text-ink/65">{phase.purpose}</p><p className="mt-2 text-xs font-semibold text-burgundy">Phase outcome: {phase.outcome}</p></div></div>
                     <div className="ml-4 border-l-2 border-burgundy/15 pl-5 sm:ml-5 sm:pl-7">
                       {phaseWeeks.map((week) => {
                         const index = roadmap.weeklyPlan.findIndex((item) => item.week === week.week);
