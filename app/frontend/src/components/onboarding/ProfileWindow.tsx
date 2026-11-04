@@ -46,9 +46,21 @@ export default function ProfileWindow({ onCancel }: ProfileWindowProps) {
   const shownError = error ?? profileError;
   const emailLocked = Boolean(user?.email);
   const phoneLocked = Boolean(user?.phone);
+  const profileFields = [draft.first_name, draft.last_name, draft.date_of_birth, draft.email, draft.phone, draft.address, draft.highest_education];
+  const profileProgress = Math.round((profileFields.filter((value) => value.trim().length > 0).length / profileFields.length) * 100);
 
   return (
     <Modal open onClose={onCancel} dismissible={false} title="Complete your profile" eyebrow="Your details">
+      <div className="mb-6 rounded-xl border border-burgundy/15 bg-cream px-4 py-3">
+        <div className="flex items-center justify-between gap-3">
+          <p className="font-label text-xs font-semibold text-burgundy">Your profile setup</p>
+          <span className="text-xs font-semibold tabular-nums text-burgundy">{profileProgress}%</span>
+        </div>
+        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-burgundy/10">
+          <div className="h-full rounded-full bg-burgundy transition-[width] duration-300" style={{ width: `${profileProgress}%` }} />
+        </div>
+        <p className="mt-2 text-xs leading-relaxed text-muted">These details help RestartHER tailor your learning journey and career suggestions. You can review the information before saving.</p>
+      </div>
       <form onSubmit={handleSave} noValidate className="space-y-6">
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
