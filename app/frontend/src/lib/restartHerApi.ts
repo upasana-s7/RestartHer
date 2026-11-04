@@ -13,7 +13,7 @@ export async function sendCompanionMessage(message: string, history: Array<{ rol
   try {
     response = await fetch(COMPANION_ACTION, {
       method: 'POST',
-      signal: AbortSignal.timeout(mode === 'roadmap' ? 30000 : 20000),
+      signal: AbortSignal.timeout(mode === 'roadmap' ? 22000 : 15000),
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
         message: trimmed,
