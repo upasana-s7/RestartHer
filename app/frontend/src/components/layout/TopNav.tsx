@@ -12,8 +12,8 @@ interface TopNavProps {
 
 export default function TopNav({ section, onNavigate, onOpenDrawer }: TopNavProps) {
   return (
-    <header className="sticky top-0 z-30 border-b border-burgundy/15 bg-cream/90 backdrop-blur-md">
-      <div className="flex h-20 items-center gap-4 px-5 sm:px-8 lg:px-12">
+    <header className="sticky top-0 z-30 border-b border-burgundy/15 bg-cream/95 backdrop-blur-md">
+      <div className="flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-10">
         <button
           type="button"
           onClick={onOpenDrawer}
@@ -29,39 +29,40 @@ export default function TopNav({ section, onNavigate, onOpenDrawer }: TopNavProp
           <span className="font-display text-lg font-bold tracking-tight">RESTARTHER</span>
         </div>
 
-        <nav aria-label="Sections" className="ml-2 hidden h-full md:block lg:hidden">
-          <ul className="flex h-full items-center gap-7">
-            {NAV_ITEMS.map((item) => {
-              const active = section === item.id;
-              return (
-                <li key={item.id} className="h-full">
-                  <button
-                    type="button"
-                    onClick={() => onNavigate(item.id)}
-                    aria-current={active ? 'page' : undefined}
-                    className={cn(
-                      'relative h-full font-label text-sm font-semibold tracking-wide transition-colors',
-                      active ? 'text-burgundy' : 'text-ink/70 hover:text-ink',
-                    )}
-                  >
-                    {item.label}
-                    <span
-                      className={cn(
-                        'absolute inset-x-0 bottom-0 h-0.5 origin-left rounded-full bg-burgundy transition-transform duration-300',
-                        active ? 'scale-x-100' : 'scale-x-0',
-                      )}
-                    />
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
         <div className="ml-auto">
           <AvatarMenu />
         </div>
       </div>
+
+      {/* Keep section links visible on phones and tablets; don't make users rely on the drawer. */}
+      <nav aria-label="Section navigation" className="border-t border-burgundy/10 px-3 sm:px-6 lg:px-8">
+        <ul className="flex min-h-12 items-stretch gap-1 overflow-x-auto">
+          {NAV_ITEMS.map((item) => {
+            const active = section === item.id;
+            return (
+              <li key={item.id} className="shrink-0">
+                <button
+                  type="button"
+                  onClick={() => onNavigate(item.id)}
+                  aria-current={active ? 'page' : undefined}
+                  className={cn(
+                    'relative flex h-12 items-center whitespace-nowrap px-3 font-label text-xs font-semibold tracking-wide transition-colors sm:px-4 sm:text-sm',
+                    active ? 'text-burgundy' : 'text-ink/70 hover:bg-burgundy-soft hover:text-ink',
+                  )}
+                >
+                  {item.label}
+                  <span
+                    className={cn(
+                      'absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-burgundy transition-transform duration-200',
+                      active ? 'scale-x-100' : 'scale-x-0',
+                    )}
+                  />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
     </header>
   );
 }
