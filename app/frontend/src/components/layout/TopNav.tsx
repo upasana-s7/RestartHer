@@ -35,8 +35,8 @@ export default function TopNav({ section, onNavigate, onOpenDrawer }: TopNavProp
               const active = section === item.id;
               return (
                 <li key={item.id} className="h-full shrink-0">
-                  <button
-                    type="button"
+                  <a
+                    href={item.id === 'home' ? '#/' : `#/${item.id}`}
                     onClick={() => onNavigate(item.id)}
                     aria-current={active ? 'page' : undefined}
                     className={cn(
@@ -51,7 +51,7 @@ export default function TopNav({ section, onNavigate, onOpenDrawer }: TopNavProp
                         active ? 'scale-x-100' : 'scale-x-0',
                       )}
                     />
-                  </button>
+                  </a>
                 </li>
               );
             })}
