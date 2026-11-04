@@ -19,8 +19,14 @@ export function useSectionRoute() {
 
   const setSection = useCallback((next: Section) => {
     const target = next === 'home' ? '#/' : `#/${next}`;
-    if (window.location.hash !== target) window.location.hash = target;
-    else setSectionState(next);
+
+    // Update React state immediately so navigation never depends on the
+    // browser's asynchronous hashchange event to render the selected page.
+    setSectionState(next);
+
+    if (window.location.hash !== target) {
+      window.location.hash = target;
+    }
   }, []);
 
   return { section, setSection };
