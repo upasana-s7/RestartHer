@@ -5,7 +5,7 @@ import { buttonClass } from '@/components/ui/buttonClass';
 import { useAuth } from '@/hooks/useAuth';
 import { useSectionRoute } from '@/hooks/useSectionRoute';
 import type { CareerRoadmap } from '@/lib/journey';
-import { getRecommendedSapCourseIds, loadCareerRoadmap } from '@/lib/journey';
+import { getRecommendedSapCourseIds, getRoadmapPhases, loadCareerRoadmap } from '@/lib/journey';
 import { COURSES } from '@/data/courses';
 
 const TOOLKIT_ITEMS = [
@@ -77,18 +77,13 @@ export default function LearningPage() {
                 <p className="mt-2 text-xs text-muted">{completedCount} of {allTaskIds.length} learning tasks completed · Progress is saved on this device.</p>
               </div>
               <div className="mt-8 space-y-8">
-                {[
-                  { title: 'Phase 1 · Foundations & refresh', subtitle: 'Reconnect with the basics and identify what you already know.', from: 0, to: Math.max(1, Math.ceil(roadmap.weeklyPlan.length / 4)) },
-                  { title: 'Phase 2 · Guided practice', subtitle: 'Build confidence through focused exercises and supported practice.', from: Math.max(1, Math.ceil(roadmap.weeklyPlan.length / 4)), to: Math.max(2, Math.ceil(roadmap.weeklyPlan.length / 2)) },
-                  { title: 'Phase 3 · Applied skills', subtitle: 'Use your growing skills in practical tasks and small projects.', from: Math.max(2, Math.ceil(roadmap.weeklyPlan.length / 2)), to: Math.max(3, Math.ceil(roadmap.weeklyPlan.length * 3 / 4)) },
-                  { title: 'Phase 4 · Career readiness', subtitle: 'Bring the learning together into evidence of your abilities.', from: Math.max(3, Math.ceil(roadmap.weeklyPlan.length * 3 / 4)), to: roadmap.weeklyPlan.length },
-                ].map((phase, phaseIndex) => {
-                  const phaseWeeks = roadmap.weeklyPlan.slice(phase.from, phase.to);
+                {getRoadmapPhases(roadmap).map((phase, phaseIndex) => {
+                  const phaseWeeks = roadmap.weeklyPlan.filter((week) => phase.weeks.includes(week.week));
                   if (!phaseWeeks.length) return null;
                   return <section key={phase.title} aria-label={phase.title}>
                     <div className="mb-4 flex items-start gap-4">
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-burgundy text-sm font-semibold text-cream">{phaseIndex + 1}</span>
-                      <div><h3 className="font-display text-xl font-bold text-ink">{phase.title}</h3><p className="mt-1 text-sm leading-6 text-ink/65">{phase.subtitle}</p></div>
+                      <div><h3 className="font-display text-xl font-bold text-ink">{phase.title}</h3><p className="mt-1 text-sm leading-6 text-ink/65">{phase.purpose}</p><p className="mt-2 text-xs font-semibold text-burgundy">Phase outcome: {phase.outcome}</p></div>
                     </div>
                     <div className="ml-4 border-l-2 border-burgundy/15 pl-5 sm:ml-5 sm:pl-7">
                       {phaseWeeks.map((week) => (
