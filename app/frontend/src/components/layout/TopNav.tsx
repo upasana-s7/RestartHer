@@ -29,7 +29,7 @@ export default function TopNav({ section, onNavigate, onOpenDrawer }: TopNavProp
           <span className="font-display text-lg font-bold tracking-tight">RESTARTHER</span>
         </div>
 
-        <nav aria-label="Sections" className="ml-2 hidden h-full md:block">
+        <nav aria-label="Sections" className="ml-2 hidden h-full md:block lg:hidden">
           <ul className="flex h-full items-center gap-7">
             {NAV_ITEMS.map((item) => {
               const active = section === item.id;
