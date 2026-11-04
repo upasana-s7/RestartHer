@@ -45,10 +45,10 @@ const JOURNEY_CARDS: JourneyCard[] = [
     title: 'Find a mentor',
     description: 'Explore guidance, support, and professional connections.',
     cta: 'Find guidance',
-    target: 'opportunities',
+    target: 'mentorship',
     image: 'https://images.pexels.com/photos/8530439/pexels-photo-8530439.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
     icon: Users,
-    comingSoon: true,
+    comingSoon: false,
   },
 ];
 
