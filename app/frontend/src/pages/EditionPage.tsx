@@ -43,7 +43,7 @@ export default function EditionPage({ onNavigate }: EditionPageProps) {
   return (
     <div>
       <Masthead />
-      <Hero />
+      <Hero onNavigate={onNavigate} />
       <Ticker />
       <EmotionalIntro onNavigate={onNavigate} />
 
