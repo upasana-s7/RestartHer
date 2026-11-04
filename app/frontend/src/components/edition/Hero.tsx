@@ -1,10 +1,11 @@
 import { ArrowRight } from 'lucide-react';
 import { buttonClass } from '@/components/ui/buttonClass';
 import { scrollToId } from '@/lib/scrollToId';
+import type { Section } from '@/hooks/useSectionRoute';
 
 const SIDE_HEADLINES = ['A new chapter begins here.', 'Her experience still matters.', 'Every comeback has its own story.'];
 
-export default function Hero() {
+export default function Hero({ onNavigate }: { onNavigate: (section: Section) => void }) {
   return (
     <section className="grid items-center gap-12 px-5 py-14 sm:px-8 lg:grid-cols-12 lg:gap-10 lg:px-12 lg:py-20">
       <div className="lg:col-span-7">
@@ -23,14 +24,23 @@ export default function Hero() {
             </li>
           ))}
         </ul>
-        <button
-          type="button"
-          onClick={() => scrollToId('stories')}
-          className={buttonClass('primary', 'animate-rise mt-12 gap-3 px-7 py-4 [animation-delay:750ms] group')}
-        >
-          Read the edition
-          <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
-        </button>
+        <div className="animate-rise mt-12 flex flex-wrap gap-3 [animation-delay:750ms]">
+          <button
+            type="button"
+            onClick={() => onNavigate('journey')}
+            className={buttonClass('primary', 'gap-3 px-7 py-4 group')}
+          >
+            Start my career journey
+            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollToId('stories')}
+            className={buttonClass('outline', 'gap-3 px-7 py-4')}
+          >
+            Read the edition
+          </button>
+        </div>
       </div>
 
       <figure className="lg:col-span-5">
