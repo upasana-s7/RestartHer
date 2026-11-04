@@ -7,6 +7,7 @@ export interface CareerAssessment {
   existingSkills: string;
   targetRole: string;
   learningNeeds: string;
+  learningPreferences: string;
   availability: string;
   biggestBarrier: string;
   personalContext: string;
@@ -19,12 +20,19 @@ export interface RoadmapWeek {
   milestone: string;
   courseIds: string[];
 }
+export interface RoadmapPhase {
+  title: string;
+  purpose: string;
+  outcome: string;
+  weeks: number[];
+}
 export interface CareerRoadmap {
   title: string;
   targetRole: string;
   overview: string;
   durationWeeks: number;
   weeklyPlan: RoadmapWeek[];
+  phases?: RoadmapPhase[];
   confirmedAt?: string;
   assessment?: CareerAssessment;
 }
@@ -61,6 +69,12 @@ export const ASSESSMENT_QUESTIONS: Array<{ key: AssessmentQuestionKey; label: st
     placeholder: 'E.g. Refresh Python and SQL, learn current industry tools', multiline: true,
   },
   {
+    key: 'learningPreferences',
+    label: 'What learning arrangements would work best for you?',
+    hint: 'Share any requirements the plan should respect, such as free resources, flexible timing, beginner-friendly explanations, language, accessibility or hands-on learning.',
+    placeholder: 'E.g. Free resources, short lessons, practical projects, flexible schedule', multiline: true,
+  },
+  {
     key: 'availability',
     label: 'How much time can you commit?',
     hint: 'Include your daily study time and the time you want your plan to cover.',
@@ -74,7 +88,7 @@ export const ASSESSMENT_QUESTIONS: Array<{ key: AssessmentQuestionKey; label: st
   },
 ];
 export function emptyAssessment(): CareerAssessment {
-  return { previousRole: '', breakDuration: '', existingSkills: '', targetRole: '', learningNeeds: '', availability: '', biggestBarrier: '', personalContext: '' };
+  return { previousRole: '', breakDuration: '', existingSkills: '', targetRole: '', learningNeeds: '', learningPreferences: '', availability: '', biggestBarrier: '', personalContext: '' };
 }
 export function loadCareerRoadmap(userId: string): CareerRoadmap | null {
   try {
@@ -100,10 +114,10 @@ export async function generateCareerRoadmap(answers: CareerAssessment, revision 
   const catalogue = COURSES.map((course) => ({ id: course.id, title: course.title, provider: course.provider, skills: course.skills, level: course.level }));
   const targetWeeks = getTargetWeeks(answers.availability);
   const prompt = [
-    'You are creating a career re-entry plan for a woman with prior professional experience who is returning after a career break. Do not treat her as a student or first-time job seeker.',
+    'You are creating an individual career or skills roadmap for a woman. She may be returning after a career break, changing fields, upskilling, entering a technical field or restarting education. Never assume one journey fits everyone. Respect her stated experience, interests, goals, barriers and practical requirements.',
     'Return ONLY valid JSON with this exact shape:',
-    '{"title":"short title","targetRole":"target role","overview":"where she stands now, what she aims to achieve and how this plan helps","durationWeeks":' + targetWeeks + ',"weeklyPlan":[{"week":1,"focus":"focus","topics":["topic"],"tasks":["specific task","specific task"],"milestone":"observable result","courseIds":["valid catalogue id"]}]}',
-    'Create exactly ' + targetWeeks + ' weeks, aligned to her chosen duration and realistic daily availability. Structure the journey progressively: foundations and refresh first, then guided practice, applied exercises, and a portfolio/career-readiness outcome where appropriate. Each week needs 2-4 specific topics, 3-5 actionable tasks, and one measurable milestone. Each task must explain the actual action (not generic labels like learn/practice), include a realistic time estimate in minutes, and identify an output or check for understanding. Give the overview a useful high-level learning approach: how the skill will be approached, why the sequence works, and what she should be able to do by the end. Use approachable language and avoid dumping an overwhelming list. Build on prior experience, refresh relevant skills, include hands-on work and suitable resume/interview preparation. Be encouraging about the career gap. Use only courseIds from the catalogue; use [] when none fit. Do not invent courses, certificates, jobs, salaries or guarantees. Keep concise but sufficiently informative.',
+    '{"title":"short title","targetRole":"target role","overview":"personalised explanation","durationWeeks":' + targetWeeks + ',"phases":[{"title":"specific phase name","purpose":"why this phase matters for her goal","outcome":"observable phase outcome","weeks":[1]}],"weeklyPlan":[{"week":1,"focus":"specific focus","topics":["topic"],"tasks":["action with time estimate and output"],"milestone":"observable result","courseIds":["valid catalogue id"]}]}',
+    'Create exactly ' + targetWeeks + ' weeks, aligned to her chosen duration and realistic availability. Also create 2-4 meaningful phases (not necessarily four if the duration is short), each with a tailored title, purpose, measurable outcome and week numbers that cover every week exactly once without overlap. Phase names and sequence must fit her actual field and goal. Structure the journey progressively: foundations or experience recognition first, then guided practice, applied work and a relevant next-step outcome. Do not force job applications or portfolio work if her goal does not call for them. Each week needs 2-4 specific topics, 3-5 actionable tasks, and one measurable milestone. Each task must explain the actual action (not generic labels like learn/practice), include a realistic time estimate in minutes, and identify an output or check for understanding. Give the overview a useful high-level learning approach: how the skill will be approached, why the sequence works, and what she should be able to do by the end. Use approachable language and avoid dumping an overwhelming list. Build on prior experience and interests rather than restarting from zero. Tailor topics, projects, tools and milestones to her exact field (for example, data analytics, electronics, teaching, finance, design or entrepreneurship). Explicitly honour learningPreferences, availability, budget/resource constraints and biggestBarrier. If she asks for free resources, prioritise free learning routes and do not assume paid courses. Include suitable career preparation only when relevant. Be encouraging about the career gap. Use only courseIds from the catalogue; use [] when none fit. Do not invent courses, certificates, jobs, salaries or guarantees. Keep concise but sufficiently informative.',
     'CAREER RETURN ASSESSMENT: ' + JSON.stringify(answers),
     'AVAILABLE COURSES: ' + JSON.stringify(catalogue),
     revision ? 'REQUESTED CHANGE: ' + revision + '. Apply it while keeping the plan concise.' : '',
@@ -128,7 +142,24 @@ export async function generateCareerRoadmap(answers: CareerAssessment, revision 
     milestone: String(week.milestone || 'Review what you have learned'),
     courseIds: Array.isArray(week.courseIds) ? week.courseIds.filter((id): id is string => typeof id === 'string' && validIds.has(id)) : [],
   }));
-  return { title: value.title, targetRole: value.targetRole, overview: String(value.overview || ''), durationWeeks: weeklyPlan.length, weeklyPlan, assessment: answers };
+  const validWeekNumbers = new Set(weeklyPlan.map((week) => week.week));
+  const phases = Array.isArray(value.phases) ? value.phases.map((phase) => ({
+    title: String(phase.title || 'Learning phase'),
+    purpose: String(phase.purpose || ''),
+    outcome: String(phase.outcome || ''),
+    weeks: Array.isArray(phase.weeks) ? phase.weeks.map(Number).filter((week) => validWeekNumbers.has(week)) : [],
+  })).filter((phase) => phase.weeks.length) : [];
+  const phaseCoverage = phases.flatMap((phase) => phase.weeks).sort((a, b) => a - b);
+  const phasesAreComplete = phaseCoverage.length === weeklyPlan.length && new Set(phaseCoverage).size === weeklyPlan.length && weeklyPlan.every((week) => phaseCoverage.includes(week.week));
+  const balancedPhases: RoadmapPhase[] = phasesAreComplete ? phases : (() => {
+    const count = Math.min(4, weeklyPlan.length);
+    return Array.from({ length: count }, (_, index) => {
+      const from = Math.floor(index * weeklyPlan.length / count);
+      const to = Math.floor((index + 1) * weeklyPlan.length / count);
+      return { title: ['Foundations & refresh', 'Guided practice', 'Applied learning', 'Next-step readiness'][index], purpose: 'Build the skills and confidence needed for the next stage.', outcome: 'Complete the focus and review the milestone for this phase.', weeks: weeklyPlan.slice(from, to).map((week) => week.week) };
+    });
+  })();
+  return { title: value.title, targetRole: value.targetRole, overview: String(value.overview || ''), durationWeeks: weeklyPlan.length, weeklyPlan, phases: balancedPhases, assessment: answers };
 }
 
 /** Match SAP learning resources to a learner's previous experience and target return role. */
