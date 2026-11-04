@@ -98,6 +98,11 @@ export default function AuthWindow({ onClose }: AuthWindowProps) {
         ))}
       </div>
 
+      <div className="mb-5 rounded-xl border border-burgundy/15 bg-cream px-4 py-3 transition-colors duration-200">
+        <p className="font-label text-xs font-semibold text-burgundy">{isSignUp ? 'A fresh start, saved for you' : 'Your journey is waiting'}</p>
+        <p className="mt-1 text-xs leading-relaxed text-muted">{isSignUp ? 'Create an account to keep your learning plan, progress and next steps together.' : 'Sign in to pick up your RestartHER journey right where you left it.'}</p>
+      </div>
+
       {notice && (
         <p role="status" className="mb-5 rounded-lg bg-burgundy-soft px-4 py-3 text-sm text-burgundy-deep">
           {notice}
@@ -138,7 +143,18 @@ export default function AuthWindow({ onClose }: AuthWindowProps) {
               {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
             </button>
           </div>
-          {isSignUp && <p className="mt-2 text-xs text-muted">At least {MIN_PASSWORD_LENGTH} characters.</p>}
+          {isSignUp && (
+            <div className="mt-2 space-y-1.5" aria-live="polite">
+              <div className="flex items-center justify-between text-xs text-muted">
+                <span>{password.length >= MIN_PASSWORD_LENGTH ? 'Password length looks good' : 'Password length'}</span>
+                <span>{password.length}/{MIN_PASSWORD_LENGTH} characters</span>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-burgundy/10">
+                <div className="h-full rounded-full bg-burgundy transition-[width] duration-300" style={{ width: `${Math.min(100, (password.length / MIN_PASSWORD_LENGTH) * 100)}%` }} />
+              </div>
+              <p className="text-xs text-muted">Use at least {MIN_PASSWORD_LENGTH} characters.</p>
+            </div>
+          )}
         </div>
 
         {error && (
