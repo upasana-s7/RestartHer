@@ -36,6 +36,20 @@ export interface CareerRoadmap {
   confirmedAt?: string;
   assessment?: CareerAssessment;
 }
+export function getRoadmapPhases(roadmap: CareerRoadmap): RoadmapPhase[] {
+  if (roadmap.phases?.length) return roadmap.phases;
+  const count = Math.min(4, roadmap.weeklyPlan.length);
+  return Array.from({ length: count }, (_, index) => {
+    const from = Math.floor(index * roadmap.weeklyPlan.length / count);
+    const to = Math.floor((index + 1) * roadmap.weeklyPlan.length / count);
+    return {
+      title: ['Foundations & refresh', 'Guided practice', 'Applied learning', 'Next-step readiness'][index],
+      purpose: 'Build the skills and confidence needed for the next stage.',
+      outcome: 'Complete the focus and review the milestone for this phase.',
+      weeks: roadmap.weeklyPlan.slice(from, to).map((week) => week.week),
+    };
+  });
+}
 type AssessmentQuestionKey = Exclude<keyof CareerAssessment, 'personalContext'>;
 export const ASSESSMENT_QUESTIONS: Array<{ key: AssessmentQuestionKey; label: string; hint: string; placeholder: string; multiline?: boolean }> = [
   {
