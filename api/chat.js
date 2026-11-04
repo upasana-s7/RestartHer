@@ -1,9 +1,7 @@
 const CHAT_MAX_MESSAGE_LENGTH = 4000;
 const ROADMAP_MAX_MESSAGE_LENGTH = 12000;
-const CHAT_MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+const CHAT_MODEL = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
 const ROADMAP_MODEL = process.env.GEMINI_ROADMAP_MODEL || 'gemini-3.5-flash-lite';
-
-const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -44,40 +42,22 @@ export default async function handler(req, res) {
     contents,
     generationConfig: {
       temperature: isRoadmapRequest ? 0.2 : 0.5,
-      maxOutputTokens: isRoadmapRequest ? 2600 : 500,
+      maxOutputTokens: isRoadmapRequest ? 2400 : 350,
       ...(isRoadmapRequest ? { responseMimeType: 'application/json' } : {})
     }
   };
 
   try {
-    let upstream;
-    let data;
-    const maxAttempts = isRoadmapRequest ? 2 : 2;
-
-    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-      try {
-        upstream = await fetch(
-          'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(apiKey),
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody),
-            signal: AbortSignal.timeout(isRoadmapRequest ? 25000 : 18000)
-          }
-        );
-        data = await upstream.json().catch(() => null);
-        if (upstream.ok) break;
-
-        const retryable = [429, 500, 502, 503, 504].includes(upstream.status);
-        if (!retryable || attempt === maxAttempts - 1) break;
-        console.warn(`Gemini returned ${upstream.status}; retrying once with ${model}.`);
-      } catch (requestError) {
-        if (requestError?.name === 'TimeoutError' || requestError?.name === 'AbortError') throw requestError;
-        if (attempt === maxAttempts - 1) throw requestError;
-        console.warn('Gemini network request failed; retrying once.');
+    const upstream = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(apiKey),
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+        signal: AbortSignal.timeout(isRoadmapRequest ? 20000 : 13000)
       }
-      await wait(300);
-    }
+    );
+    const data = await upstream.json().catch(() => null);
 
     if (!upstream?.ok) {
       const status = upstream?.status;
