@@ -9,11 +9,15 @@
   },
   "devDependencies": {
     "@cap-js/sqlite": "^3",
-    "cds-plugin-ui5": "^0.17.0"
+    "cds-plugin-ui5": "^0.17.0",
+    "@sap/cds-dk": "^10"
   },
   "scripts": {
     "start": "cds-serve",
-    "watch-restarther": "cds watch --open restarther.restarther/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-restarther": "cds watch --open restarther.restarther/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "frontend:dev": "npm run dev --workspace app/frontend",
+    "frontend:build": "npm run build --workspace app/frontend",
+    "frontend:typecheck": "npm run typecheck --workspace app/frontend"
   },
   "private": true,
   "cds": {
